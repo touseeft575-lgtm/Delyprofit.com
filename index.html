@@ -35,7 +35,10 @@
     </div>
 
     <div class="action-grid">
-        <div class="action-btn" onclick="alert('Deposit page opening...')">
+        <div class="action-btn" onclick="openDeposit()">
+    <i class="fas fa-university"></i><br>Deposit
+</div>
+
             <i class="fas fa-university"></i><br>Deposit
         </div>
         <div class="action-btn" onclick="window.location.href='withdraw.html'">
@@ -70,7 +73,52 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, (user) => {// --- Yahan se paste karein ---
+
+window.openDeposit = () => {
+    document.getElementById('depositModal').style.display = 'block';
+    document.getElementById('modalOverlay').style.display = 'block';
+};
+
+window.closeDeposit = () => {
+    document.getElementById('depositModal').style.display = 'none';
+    document.getElementById('modalOverlay').style.display = 'none';
+};
+
+window.submitDeposit = async () => {
+    const amount = document.getElementById('depAmount').value;
+    const tid = document.getElementById('depTID').value;
+    
+    if(!amount || !tid) {
+        alert("Meharbani karke Amount aur Transaction ID dono likhein.");
+        return;
+    }
+
+    const user = auth.currentUser;
+    if(user) {
+        try {
+            // "addDoc" aur "collection" ko uupar import zaroori hai agar error aaye
+            const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            await addDoc(collection(db, "deposits"), {
+                uid: user.uid,
+                email: user.email,
+                amount: amount,
+                tid: tid,
+                status: "pending",
+                timestamp: new Date()
+            });
+            alert("Request mil gayi hai! Admin jald verify karega.");
+            closeDeposit();
+        } catch (error) {
+            alert("Error: " + error.message);
+        }
+    } else {
+        alert("Pehle login karein.");
+    }
+};
+
+// --- Yahan tak ---
+
             if (user) {
                 onSnapshot(doc(db, "users", user.uid), (doc) => {
                     if (doc.exists()) {
