@@ -44,6 +44,15 @@
         apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMIcnvYW-D-67g",
         authDomain: "dailyprofit-b9600.firebaseapp.com",
         projectId: "dailyprofit-b9600",
+       
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMIcnvYW-D-67g",
+        authDomain: "dailyprofit-b9600.firebaseapp.com",
+        projectId: "dailyprofit-b9600",
         storageBucket: "dailyprofit-b9600.firebasestorage.app",
         messagingSenderId: "879891413676",
         appId: "1:879891413676:web:bfba99ee5b95c45b957d09"
@@ -55,20 +64,19 @@
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            // Firestore se user ka data fetch karna
-            const userDocRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userDocRef);
+            // User ID se data dhoondna
+            const userRef = doc(db, "users", user.uid);
+            const snapshot = await getDoc(userRef);
 
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                // Aapke database mein field name 'mobile' hai
-                document.getElementById('userMobile').innerText = userData.mobile || "Not Found";
-                document.getElementById('userBalance').innerText = userData.balance || "0";
+            if (snapshot.exists()) {
+                const data = snapshot.data();
+                // Check karein ke field ka naam 'mobile' hi hai
+                document.getElementById('userMobile').innerText = data.mobile ? data.mobile : "No Number";
+                document.getElementById('userBalance').innerText = data.balance !== undefined ? data.balance : "0";
             } else {
-                document.getElementById('userMobile').innerText = "No Profile Found";
+                document.getElementById('userMobile').innerText = "Data Missing";
             }
         } else {
-            // Agar login nahi hai toh login page par bhejein
             window.location.href = "login.html";
         }
     });
@@ -78,10 +86,9 @@
         if(amt < 500) {
             alert("Minimum withdraw limit Rs. 500 hai.");
         } else {
-            alert("Aapki withdraw request bhej di gayi hai!");
+            alert("Withdraw Request Received! Admin will approve soon.");
         }
     };
-</script>
 
         
         const firebaseConfig = {
