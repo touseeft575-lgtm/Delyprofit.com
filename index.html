@@ -152,32 +152,30 @@
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
             document.getElementById('overlay').style.display = 'none';
         };
-
-        // --- AUTH & PERSISTENCE FIX ---
-        setPersistence(auth, browserLocalPersistence)
-            .then(() => {
-                return onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        console.log("Session Active:", user.uid);
-                        // Real-time Data Sync
-                        onSnapshot(doc(db, "users", user.uid), (snap) => {
-                            if (snap.exists()) {
-                                const data = snap.data();
-                                document.getElementById('userBalance').innerText = data.balance || "0.00";
-                                document.getElementById('todayProfit').innerText = data.todayProfit || "0.00";
-                                document.getElementById('totalProfit').innerText = data.totalProfit || "0.00";
-                            }
-                        });
-                    } else {
-                        window.location.href = "login.html";
+// --- AUTH & PERSISTENCE FIX ---
+setPersistence(auth, browserLocalPersistence)
+    .then(() => {
+        return onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Session Active:", user.uid);
+                // Data load karne ka logic yahan rahega
+                onSnapshot(doc(db, "users", user.uid), (snap) => {
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        document.getElementById('userBalance').innerText = data.balance || "0.00";
+                        document.getElementById('todayProfit').innerText = data.todayProfit || "0.00";
+                        document.getElementById('totalProfit').innerText = data.totalProfit || "0.00";
                     }
                 });
-            })
-            .catch((error) => console.error("Persistence Error:", error));
+            } else {
+                // AUTO-LOGOUT FIX: Fauran redirect na karein, 2 second wait karein
+                setTimeout(() => {
+                    if (!auth.currentUser) {
+                        window.location.href = "login.html";
+                    }
+                }, 2000); 
+            }
+        });
+    })
+    .catch((error) => console.error("Persistence Error:", error));
 
-        window.logOutUser = () => {
-            signOut(auth).then(() => { window.location.href = "login.html"; });
-        };
-    </script>
-</body>
-</html>
