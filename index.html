@@ -115,7 +115,7 @@
         <a href="https://wa.me/923297179402" target="_blank" class="nav-item" style="text-decoration:none;"><i class="fab fa-whatsapp"></i>Support</a>
     </nav>
 
-    <script type="module">
+        <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
@@ -133,10 +133,11 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- AUTH & AUTO-LOGOUT FIX ---
+        // --- FINAL ANTI-LOGOUT FIX (15 SECOND WAIT) ---
         setPersistence(auth, browserLocalPersistence).then(() => {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
+                    console.log("Session Active:", user.uid);
                     onSnapshot(doc(db, "users", user.uid), (snap) => {
                         if (snap.exists()) {
                             const d = snap.data();
@@ -146,12 +147,17 @@
                         }
                     });
                 } else {
-                    setTimeout(() => { if (!auth.currentUser) window.location.replace("login.html"); }, 5000);
+                    // Agar session load hone mein der lage toh 15 second tak logout nahi karega
+                    setTimeout(() => { 
+                        if (!auth.currentUser) {
+                            window.location.replace("login.html"); 
+                        }
+                    }, 15000);
                 }
             });
         });
 
-        // Plans logic
+        // Plans Data
         const plans = [
             { inv: 500, daily: 120 }, { inv: 1000, daily: 240 }, { inv: 2000, daily: 480 },
             { inv: 5000, daily: 1200 }, { inv: 10000, daily: 2500 }, { inv: 20000, daily: 5200 }
@@ -173,3 +179,6 @@
     </script>
 </body>
 </html>
+
+        
+        
