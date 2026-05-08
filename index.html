@@ -132,30 +132,52 @@
         </div>
     </div>
 
-    <script>
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function buyPlan(amt) { alert("Plan activation request for Rs." + amt + " has been sent to admin."); }
-    </script> // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+    <script type="module">
+  // Import the functions you need from the SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMIcnvYW-D-67g",
-  authDomain: "dailyprofit-b9600.firebaseapp.com",
-  projectId: "dailyprofit-b9600",
-  storageBucket: "dailyprofit-b9600.firebasestorage.app",
-  messagingSenderId: "879891413676",
-  appId: "1:879891413676:web:bfba99ee5b95c45b957d09",
-  measurementId: "G-T5FJ81FP62"
-};
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBlygZa2EDyHBuCT8RTZEMicnvYW-D-67g",
+    authDomain: "dailyprofit-b9600.firebaseapp.com",
+    projectId: "dailyprofit-b9600",
+    storageBucket: "dailyprofit-b9600.appspot.com",
+    messagingSenderId: "879891413676",
+    appId: "1:879891413676:web:bfba99ee5b95c45b957d09",
+    measurementId: "G-T5FJ81FP62"
+  };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  // Real-time Balance Update
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // User login hai, uska balance Firestore se lao
+      onSnapshot(doc(db, "users", user.uid), (doc) => {
+        if (doc.exists()) {
+          const userData = doc.data();
+          document.getElementById("userBalance").innerText = userData.balance || "0.00";
+          document.getElementById("dailyProfit").innerText = "Rs. " + (userData.dailyProfit || "0.00");
+          document.getElementById("totalWithdraw").innerText = "Rs. " + (userData.withdraw || "0.00");
+        }
+      });
+    } else {
+      // Agar login nahi hai to login page par bhej do
+      // window.location.href = "login.html"; 
+    }
+  });
+
+  // Modal Functions (Global banane ke liye window use kiya)
+  window.openModal = function(id) { document.getElementById(id).style.display = 'flex'; }
+  window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; }
+  window.buyPlan = function(amt) { alert("Plan activation request for Rs." + amt + " has been sent to admin."); }
+
+</script>
+
 </body>
 </html>
