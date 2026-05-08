@@ -37,7 +37,30 @@
         .modal-content { background: var(--card-bg); width: 85%; max-width: 400px; padding: 25px; border-radius: 20px; position: relative; }
         .close-btn { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; }
         input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-    </style>
+  .profile-container { position: relative; }
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background: #1e293b;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.4);
+    z-index: 1000;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #ffcc00;
+}
+.dropdown-menu.show { display: block; }
+.dropdown-menu a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 8px 0;
+    font-size: 14px;
+}
+.dropdown-menu a:hover { color: #ffcc00; }
+  </style>
 </head>
 <body>
 
@@ -46,9 +69,18 @@
     </a>
 
     <div class="navbar">
-        <div class="logo">DailyProfit</div>
-        <i class="fas fa-user-circle" style="font-size: 24px;"></i>
+    <div class="logo">DailyProfit</div>
+    <div class="profile-container">
+        <div class="profile-icon" onclick="toggleMenu()" style="cursor: pointer;">
+            <i class="fas fa-user-circle" style="font-size: 24px;"></i>
+        </div>
+        <div id="profileMenu" class="dropdown-menu">
+            <p id="displayUsername" style="color: #ffcc00; font-weight: bold; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px;">Loading...</p>
+            <a href="history.html" style="color: white; text-decoration: none; display: block; padding: 5px 0;"><i class="fas fa-history"></i> History</a>
+            <a href="#" onclick="logout()" style="color: white; text-decoration: none; display: block; padding: 5px 0;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
     </div>
+</div>
 
     <div class="container">
         <div class="balance-card">
@@ -182,7 +214,21 @@
       });
       alert("Request sent! Status: Processing (Admin approval pending)");
     }
-  };
+  };// Profile menu ko kholne aur band karne ke liye
+window.toggleMenu = function() {
+    const menu = document.getElementById("profileMenu");
+    menu.classList.toggle("show");
+};
+
+// Logout karne ke liye function
+window.logout = function() {
+    auth.signOut().then(() => {
+        window.location.href = "login.html"; 
+    }).catch((error) => {
+        alert("Logout failed: " + error.message);
+    });
+};
+
 
   window.sendWithdrawRequest = async function() {
     const amount = Number(document.getElementById("withdrawAmount").value);
