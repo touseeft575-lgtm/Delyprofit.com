@@ -133,7 +133,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- FINAL ANTI-LOGOUT FIX (15 SECOND WAIT) ---
+        // --- PERMANENT SESSION FIX (NO AUTO-LOGOUT) ---
         setPersistence(auth, browserLocalPersistence).then(() => {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
@@ -147,12 +147,8 @@
                         }
                     });
                 } else {
-                    // Agar session load hone mein der lage toh 15 second tak logout nahi karega
-                    setTimeout(() => { 
-                        if (!auth.currentUser) {
-                            window.location.replace("login.html"); 
-                        }
-                    }, 15000);
+                    // Agar user login nahi hai, toh dashboard par hi rahe, logout na ho
+                    console.log("No active session found.");
                 }
             });
         });
