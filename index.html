@@ -27,45 +27,7 @@
             border: 1px solid #2d364d; cursor: pointer; transition: 0.3s;
         }
         .action-btn i { font-size: 24px; color: var(--gold); margin-bottom: 8px; display: block; }
-/*History Section*/<div class="history-section">
-    <h2>Transaction History</h2>
-    <div class="history-filters">
-        <button onclick="loadHistory('deposits')">Deposits</button>
-        <button onclick="loadHistory('withdrawals')">Withdrawals</button>
-        <button onclick="loadHistory('plans')">Active Plans</button>
-    </div>
-    
-    <div id="historyList" class="history-list">
-        <p style="text-align:center;">Loading history...</p>
-    </div>
-</div>
 
-<script type="module">
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    
-    const db = getFirestore();
-
-    window.loadHistory = async (type) => {
-        const container = document.getElementById('historyList');
-        container.innerHTML = "Fetching data...";
-        
-        const q = query(collection(db, type), where("uid", "==", auth.currentUser.uid));
-        const querySnapshot = await getDocs(q);
-        
-        let html = "";
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            html += `
-                <div class="history-item">
-                    <span>${data.planName || type.toUpperCase()}</span>
-                    <span>Rs. ${data.amount}</span>
-                    <span class="status-${data.status}">${data.status}</span>
-                </div>
-            `;
-        });
-        container.innerHTML = html || "No records found.";
-    }
-</script>
 
         /* Plans Section */
       <div class="section-title">Investment Plans</div>
