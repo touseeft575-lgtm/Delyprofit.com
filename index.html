@@ -3,130 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - DailyProfit</title>
+    <title>DailyProfit - Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary-gold: #ffcc00; --dark-bg: #0f172a; --card-bg: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; margin: 0; padding: 15px; }
-        .balance-card { background: linear-gradient(135deg, #1e293b, #334155); padding: 25px; border-radius: 20px; border: 1px solid var(--primary-gold); text-align: center; margin-bottom: 20px; }
-        .balance-amount { font-size: 32px; font-weight: bold; color: var(--primary-gold); margin: 10px 0; }
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .action-btn { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; cursor: pointer; border: 1px solid #334155; }
-        .action-btn i { font-size: 24px; color: var(--primary-gold); margin-bottom: 10px; }
-        .menu-bar { display: flex; justify-content: space-around; background: var(--card-bg); padding: 15px; position: fixed; bottom: 0; left: 0; right: 0; border-top: 1px solid #334155; }
-        .menu-item { color: #94a3b8; text-decoration: none; font-size: 12px; text-align: center; }
-        .menu-item.active { color: var(--primary-gold); }
+        :root { --gold: #ffcc00; --bg: #0f172a; --card: #1e293b; --text: #94a3b8; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; padding-bottom: 100px; }
+        
+        /* Balance Card */
+        .balance-card { 
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 25px; border-radius: 20px; border: 1px solid rgba(255,204,0,0.3);
+            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin-bottom: 25px;
+        }
+        .bal-amount { font-size: 38px; font-weight: 800; color: var(--gold); margin: 10px 0; }
+
+        /* Action Buttons Grid */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .btn-box { 
+            background: var(--card); padding: 20px; border-radius: 15px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.3s;
+        }
+        .btn-box:active { transform: scale(0.95); }
+        .btn-box i { font-size: 28px; color: var(--gold); margin-bottom: 10px; }
+        .btn-box span { display: block; font-weight: 600; }
+
+        /* WhatsApp Support Bar */
+        .support-bar {
+            background: #25d366; color: white; padding: 15px; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center; 
+            text-decoration: none; font-weight: bold; margin-top: 10px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+        .support-bar i { font-size: 24px; margin-right: 10px; }
+
+        /* Deposit Modal */
+        #depositModal { 
+            display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); 
+            background: var(--card); padding:25px; border-radius:20px; border:1px solid var(--gold); 
+            z-index:1001; width: 85%; max-width: 380px;
+        }
+        .method-card { background: #0f172a; padding: 15px; border-radius: 12px; margin: 15px 0; border-left: 4px solid var(--gold); }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        .submit-btn { width: 100%; padding: 14px; background: var(--gold); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: #000; }
+        #modalOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; }
     </style>
 </head>
 <body>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h3>DailyProfit</h3>
-        <a href="history.html" style="color: var(--primary-gold); text-decoration: none;"><i class="fas fa-user-circle fa-2x"></i></a>
-    </div>
+    <div style="margin-bottom: 20px; font-size: 20px; font-weight: bold;">DailyProfit Dashboard</div>
 
     <div class="balance-card">
-        <div style="font-size: 14px; color: #94a3b8;">Total Balance</div>
-        <div class="balance-amount">Rs. <span id="balance">0.00</span></div>
-        <div style="display: flex; justify-content: space-around; margin-top: 15px;">
-            <div><small>Daily Profit</small><br><b id="profit">Rs. 0</b></div>
-            <div><small>Withdraw</small><br><b id="withdraw">Rs. 0</b></div>
-        </div>
+        <div style="color: var(--text);">Total Balance</div>
+        <div class="bal-amount">Rs. <span id="balance">0.00</span></div>
     </div>
 
     <div class="action-grid">
-        <div class="action-btn" onclick="openDeposit()">
-    <i class="fas fa-university"></i><br>Deposit
-</div>
-
-            <i class="fas fa-university"></i><br>Deposit
+        <div class="btn-box" onclick="openDeposit()">
+            <i class="fas fa-plus-circle"></i>
+            <span>Deposit</span>
         </div>
-        <div class="action-btn" onclick="window.location.href='withdraw.html'">
-
-            <i class="fas fa-wallet"></i><br>Withdraw
+        <div class="btn-box" onclick="location.href='withdraw.html'">
+            <i class="fas fa-arrow-alt-circle-down"></i>
+            <span>Withdraw</span>
         </div>
     </div>
 
-    <div class="menu-bar">
-        <a href="#" class="menu-item active"><i class="fas fa-home"></i><br>Home</a>
-        <a href="history.html" class="menu-item"><i class="fas fa-history"></i><br>History</a>
-        <a href="login.html" class="menu-item"><i class="fas fa-sign-out-alt"></i><br>Logout</a>
- <div id="depositModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1e293b; padding:20px; border-radius:15px; border:1px solid #ffcc00; z-index:1000; width: 90%; max-width: 400px; box-shadow: 0px 0px 20px rgba(0,0,0,0.5);">
-    <h2 style="color:#ffcc00; margin-top:0;">Deposit Funds</h2>
-    <div style="background:#0f172a; padding:15px; border-radius:10px; margin:15px 0; border-left: 5px solid #ffcc00;">
-        <p style="margin: 5px 0;"><strong>Method:</strong> EasyPaisa</p>
-        <p style="margin: 5px 0;"><strong>Name:</strong> Muhammad Touseef Ahmad</p>
-        <p style="margin: 5px 0;"><strong>Number:</strong> 03404146445</p>
+    <a href="https://wa.me/923297179402" class="support-bar" target="_blank">
+        <i class="fab fa-whatsapp"></i> WhatsApp Support
+    </a>
+
+    <div id="depositModal">
+        <h3 style="margin-top:0; color: var(--gold);">Deposit Funds</h3>
+        <div class="method-card">
+            <p style="margin:0; font-size:12px; color:var(--text);">EasyPaisa Details:</p>
+            <p style="margin:5px 0;"><b>Name:</b> Muhammad Touseef Ahmad</p>
+            <p style="margin:2px 0; font-size:18px; color:var(--gold);">03404146445</p>
+        </div>
+        <input type="number" id="depAmount" placeholder="Amount (Rs.)">
+        <input type="text" id="depTID" placeholder="Transaction ID (TID)">
+        <button class="submit-btn" onclick="submitDeposit()">Submit Verification</button>
+        <button onclick="closeDeposit()" style="width:100%; background:none; border:none; color:var(--text); margin-top:10px; cursor:pointer;">Close</button>
     </div>
-    <label>Amount (Rs.):</label>
-    <input type="number" id="depAmount" placeholder="Rakam likhein" style="width:100%; padding:10px; margin:10px 0; border-radius:8px; border:1px solid #334155; background:#0f172a; color:white;">
-    <label>Transaction ID (TID):</label>
-    <input type="text" id="depTID" placeholder="TID enter karein" style="width:100%; padding:10px; margin:10px 0; border-radius:8px; border:1px solid #334155; background:#0f172a; color:white;">
-    <button onclick="submitDeposit()" style="width:100%; padding:12px; background:#ffcc00; border:none; border-radius:10px; font-weight:bold; color:#0f172a; cursor:pointer;">Verify Deposit</button>
-    <button onclick="closeDeposit()" style="width:100%; padding:10px; background:transparent; color:#94a3b8; border:none; cursor:pointer;">Cancel</button>
-</div>
-<div id="modalOverlay" onclick="closeDeposit()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999;"></div>
-   </div>
+    <div id="modalOverlay" onclick="closeDeposit()"></div>
 
     <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, onSnapshot, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMIcnvYW-D-67g",
-        authDomain: "dailyprofit-b9600.firebaseapp.com",
-        projectId: "dailyprofit-b9600",
-        storageBucket: "dailyprofit-b9600.firebasestorage.app",
-        messagingSenderId: "879891413676",
-        appId: "1:879891413676:web:bfba99ee5b95c45b957d09"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMIcnvYW-D-67g",
+            authDomain: "dailyprofit-b9600.firebaseapp.com",
+            projectId: "dailyprofit-b9600",
+            storageBucket: "dailyprofit-b9600.firebasestorage.app",
+            messagingSenderId: "879891413676",
+            appId: "1:879891413676:web:bfba99ee5b95c45b957d09"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            onSnapshot(doc(db, "users", user.uid), (doc) => {
-                if (doc.exists()) {
-                    document.getElementById('balance').innerText = doc.data().balance.toFixed(2);
-                }
-            });
-        } else { window.location.href = "login.html"; }
-    });
-
-    window.openDeposit = () => {
-        document.getElementById('depositModal').style.display = 'block';
-        document.getElementById('modalOverlay').style.display = 'block';
-    };
-
-    window.closeDeposit = () => {
-        document.getElementById('depositModal').style.display = 'none';
-        document.getElementById('modalOverlay').style.display = 'none';
-    };
-
-    window.submitDeposit = async () => {
-        const amount = document.getElementById('depAmount').value;
-        const tid = document.getElementById('depTID').value;
-        if(!amount || !tid) { alert("Amount aur TID likhein!"); return; }
-
-        const user = auth.currentUser;
-        if(user) {
-            try {
-                await addDoc(collection(db, "deposits"), {
-                    uid: user.uid,
-                    email: user.email,
-                    amount: amount,
-                    tid: tid,
-                    status: "pending",
-                    timestamp: serverTimestamp()
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                onSnapshot(doc(db, "users", user.uid), (ds) => {
+                    if (ds.exists()) document.getElementById('balance').innerText = ds.data().balance.toLocaleString();
                 });
-                alert("Request bhej di gayi hai!");
-                closeDeposit();
-            } catch (e) { alert("Error: " + e.message); }
-        }
-    };
-</script>
+            } else { window.location.href = "login.html"; }
+        });
 
-    
+        window.openDeposit = () => {
+            document.getElementById('depositModal').style.display = 'block';
+            document.getElementById('modalOverlay').style.display = 'block';
+        };
+
+        window.closeDeposit = () => {
+            document.getElementById('depositModal').style.display = 'none';
+            document.getElementById('modalOverlay').style.display = 'none';
+        };
+
+        window.submitDeposit = async () => {
+            const amount = document.getElementById('depAmount').value;
+            const tid = document.getElementById('depTID').value;
+            if(!amount || !tid) { alert("Fill all fields!"); return; }
+            const user = auth.currentUser;
+            if(user) {
+                try {
+                    await addDoc(collection(db, "deposits"), {
+                        uid: user.uid, email: user.email, amount: amount, tid: tid, status: "pending", timestamp: serverTimestamp()
+                    });
+                    alert("Request Sent! Admin will verify.");
+                    closeDeposit();
+                } catch (e) { alert("Error: " + e.message); }
+            }
+        };
+    </script>
+</body>
+</html>
