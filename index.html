@@ -128,9 +128,10 @@
             <input type="text" placeholder="Account Holder Name">
             <input type="number" placeholder="Account Number">
             <input type="number" placeholder="Amount to Withdraw">
-            <button class="btn btn-deposit" onclick="alert('Request Sent! Status: Pending')">Send Request</button>
-            <script type="module"> import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+           <button class="btn btn-deposit" onclick="sendWithdrawRequest()">Send Request</button>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -147,12 +148,15 @@
   const db = getFirestore(app);
   const auth = getAuth(app);
 
+  let userCurrentBalance = 0;
+
   onAuthStateChanged(auth, (user) => {
     if (user) {
       onSnapshot(doc(db, "users", user.uid), (docSnap) => {
         if (docSnap.exists()) {
           const userData = docSnap.data();
-          document.getElementById("userBalance").innerText = userData.balance || "0.00";
+          userCurrentBalance = userData.balance || 0;
+          document.getElementById("userBalance").innerText = userCurrentBalance;
           document.getElementById("dailyProfit").innerText = "Rs. " + (userData.dailyProfit || "0.00");
           document.getElementById("totalWithdraw").innerText = "Rs. " + (userData.withdraw || "0.00");
         }
@@ -162,5 +166,50 @@
 
   window.openModal = function(id) { document.getElementById(id).style.display = 'flex'; }
   window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; }
-  window.buyPlan = function(amt) { alert("Plan activation request for Rs." + amt + " has been sent to admin."); }
+
+  window.buyPlan = async function(planAmount) {
+    if (userCurrentBalance < planAmount) {
+      alert("Insufficient Balance! Aapka balance is plan ke liye kam hai.");
+    } else {
+      const user = auth.currentUser;
+      const requestRef = doc(db, "requests", user.uid + "_" + Date.now());
+      await setDoc(requestRef, {
+        uid: user.uid,
+        amount: planAmount,
+        status: "Processing",
+        type: "Plan Purchase",
+        time: new Date().toLocaleString()
+      });
+      alert("Request sent! Status: Processing (Admin approval pending)");
+    }
+  };
+
+  window.sendWithdrawRequest = async function() {
+    const amount = Number(document.getElementById("withdrawAmount").value);
+    const method = document.getElementById("method").value;
+    const accName = document.getElementById("accName").value;
+    const accNum = document.getElementById("accNum").value;
+
+    if (!amount || amount < 100) return alert("Kam az kam 100 PKR withdraw karein.");
+
+    if (userCurrentBalance < amount) {
+      alert("Aapka balance na-kafi (Insufficient) hai!");
+    } else {
+      const user = auth.currentUser;
+      const withdrawRef = doc(db, "withdrawRequests", user.uid + "_" + Date.now());
+      await setDoc(withdrawRef, {
+        uid: user.uid,
+        amount: amount,
+        method: method,
+        accountName: accName,
+        accountNumber: accNum,
+        status: "Pending",
+        time: new Date().toLocaleString()
+      });
+      alert("Withdrawal request sent! Status: Processing");
+      closeModal('withdrawModal');
+    }
+  };
 </script>
+
+            
