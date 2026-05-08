@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Investment Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0b1120; color: white; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 50; }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="p-4 font-sans">
+
+    <div class="text-center mb-8">
+        <p class="text-cyan-400 font-bold tracking-widest text-sm mb-2">LIVE EARNINGS</p>
+        <h1 class="text-6xl font-mono tracking-tighter">$0.00000000</h1>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 mb-8">
+        <button onclick="openModal()" class="glass-card p-4 rounded-2xl flex flex-col items-center hover:bg-slate-700 transition">
+            <span class="text-2xl mb-1">💳</span>
+            <span class="text-xs font-medium">Deposit</span>
+        </button>03404146445
+        <div class="glass-card p-4 rounded-2xl flex flex-col items-center border-purple-500/50 border-2">
+            <span class="text-2xl mb-1">⚙️</span>
+            <span class="text-xs font-medium">Invest</span>
+        </div>
+        <div class="glass-card p-4 rounded-2xl flex flex-col items-center">
+            <span class="text-2xl mb-1">💰</span>
+            <span class="text-xs font-medium">Withdraw</span>
+        </div>300
+    </div>500000
+
+    <div class="glass-card p-6 rounded-3xl relative overflow-hidden mb-6">
+        <div class="flex justify-between items-start mb-6">
+            <h2 class="text-2xl font-bold">GPT Plan</h2>
+            <span class="bg-green-500/20 text-green-400 text-xs px-3 py-1 rounded-full border border-green-500/30">Active</span>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div>
+                <p class="text-slate-400 text-xs mb-1">Profit</p>
+                <p class="text-green-400 font-bold text-lg">0.15%</p>
+            </div>
+            <div>
+                <p class="text-slate-400 text-xs mb-1">Duration</p>
+                <p class="font-bold text-lg text-slate-200">2160 hours</p>
+            </div>
+        </div>
+        <button class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-cyan-500/20">
+            Invest Now
+        </button>
+    </div>
+
+    <div id="depositModal" class="modal px-4">
+        <div class="glass-card w-full max-w-sm p-6 rounded-3xl text-center">
+            <div class="text-4xl mb-4 text-cyan-400">📲</div>
+            <h3 class="text-xl font-bold mb-2">EasyPaisa Deposit</h3>
+            <p class="text-slate-400 text-sm mb-6">Niche diye gaye number par payment bheinjein aur screenshot support ko dein.</p>
+            
+            <div class="bg-slate-900/50 p-4 rounded-2xl border border-dashed border-cyan-500/50 mb-6">
+                <p class="text-xs text-slate-500 mb-1">Account Number</p>
+                <p class="text-2xl font-mono font-bold text-cyan-400">03404146445</p>
+                <p class="text-xs text-slate-400 mt-2">Account Name: Muhammad Touseef</p>
+            </div>
+
+            <button onclick="closeModal()" class="w-full bg-slate-700 py-3 rounded-xl font-medium">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('depositModal').classList.add('active');
+        }
+        function closeModal() {
+            document.getElementById('depositModal').classList.remove('active');
+        }
+    </script>
+
+</body>
+</html>
