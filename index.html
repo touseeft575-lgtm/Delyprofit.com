@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,34 +6,35 @@
     <title>AI Investment Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0b1120; color: white; overflow-x: hidden; }
+        body { background-color: #0b1120; color: white; overflow-x: hidden; font-family: sans-serif; }
         .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        
-        /* Login Overlay */
-        #loginOverlay {
-            position: fixed; inset: 0; background: #0b1120; z-index: 2000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
-        }
+        #authOverlay { position: fixed; inset: 0; background: #0b1120; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .hidden-dashboard { display: none; }
-        
-        /* Modal for Deposit */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 50; }
         .modal.active { display: flex; }
     </style>
 </head>
 <body>
 
-    <div id="loginOverlay">
+    <div id="authOverlay">
         <div class="w-full max-w-sm glass-card p-8 rounded-3xl text-center">
-            <h2 class="text-3xl font-bold mb-2">Welcome</h2>
-            <p class="text-slate-400 mb-8 text-sm">Please login to access your dashboard</p>
+            <div id="authTitle" class="mb-6">
+                <h2 class="text-3xl font-bold">Create Account</h2>
+                <p class="text-slate-400 text-sm">Join our AI trading platform</p>
+            </div>
             
             <div class="space-y-4">
+                <input type="text" id="userName" placeholder="Full Name" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:outline-none focus:border-cyan-500">
                 <input type="text" id="userPhone" placeholder="Mobile Number" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:outline-none focus:border-cyan-500">
                 <input type="password" id="userPass" placeholder="Password" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:outline-none focus:border-cyan-500">
-                <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 rounded-xl font-bold text-lg shadow-lg">Login / Sign Up</button>
+                
+                <button onclick="processAuth()" id="mainBtn" class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 rounded-xl font-bold text-lg shadow-lg">Sign Up</button>
             </div>
-            <p class="mt-6 text-xs text-slate-500 italic">Secure AI-Powered Trading Environment</p>
+
+            <p class="mt-6 text-sm text-slate-400">
+                <span id="toggleText">Already have an account?</span> 
+                <a href="javascript:void(0)" onclick="toggleAuth()" id="toggleBtn" class="text-cyan-400 font-bold ml-1">Login</a>
+            </p>
         </div>
     </div>
 
@@ -58,43 +59,64 @@
             </div>
         </div>
 
-        <div class="glass-card p-6 rounded-3xl relative overflow-hidden mb-6">
-            <div class="flex justify-between items-start mb-6">
-                <h2 class="text-2xl font-bold">GPT Plan</h2>
-                <span class="bg-green-500/20 text-green-400 text-xs px-3 py-1 rounded-full border border-green-500/30">Active</span>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div><p class="text-slate-400 text-xs">Profit</p><p class="text-green-400 font-bold">0.15%</p></div>
-                <div><p class="text-slate-400 text-xs">Duration</p><p class="font-bold">2160 hours</p></div>
-            </div>
-            <button class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 rounded-2xl font-bold">Invest Now</button>
+        <div class="glass-card p-6 rounded-3xl relative overflow-hidden mb-6 text-center">
+            <h2 class="text-xl font-bold mb-4">Welcome to GPT Plan</h2>
+            <p class="text-slate-400 text-sm mb-6">Start your AI investment journey today.</p>
+            <button class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 rounded-2xl font-bold">Invest Now ($300)</button>
         </div>
     </div>
 
-    <a href="https://wa.me/923297179402" target="_blank" style="position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 12px 24px; border-radius: 50px; display: flex; align-items: center; gap: 10px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; text-decoration: none; font-family: sans-serif;">
+    <a href="https://wa.me/923297179402" target="_blank" style="position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 12px 24px; border-radius: 50px; display: flex; align-items: center; gap: 10px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; text-decoration: none;">
         <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" style="width: 25px; height: 25px;">
         <span>Support</span>
     </a>
 
     <div id="depositModal" class="modal px-4">
         <div class="glass-card w-full max-w-sm p-6 rounded-3xl text-center">
-            <h3 class="text-xl font-bold mb-4 text-cyan-400 font-mono">92440902</h3>
-            <p class="text-slate-400 text-sm mb-6">Niche diye gaye number par payment bheinjein aur screenshot support ko dein.</p>
+            <h3 class="text-xl font-bold mb-4 text-cyan-400">EasyPaisa: 92440902</h3>
+            <p class="text-slate-400 text-sm mb-6">Payment bheinjein aur screenshot Support ko WhatsApp karein.</p>
             <button onclick="closeModal()" class="w-full bg-slate-700 py-3 rounded-xl">Close</button>
         </div>
     </div>
 
     <script>
-        function handleLogin() {
-            const phone = document.getElementById('userPhone').value;
-            const pass = document.getElementById('userPass').value;
-            if(phone && pass) {
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('mainDashboard').classList.remove('hidden-dashboard');
+        let isLogin = false;
+
+        function toggleAuth() {
+            isLogin = !isLogin;
+            const title = document.getElementById('authTitle');
+            const nameInput = document.getElementById('userName');
+            const mainBtn = document.getElementById('mainBtn');
+            const toggleText = document.getElementById('toggleText');
+            const toggleBtn = document.getElementById('toggleBtn');
+
+            if (isLogin) {
+                title.innerHTML = '<h2 class="text-3xl font-bold">Member Login</h2><p class="text-slate-400 text-sm">Welcome back!</p>';
+                nameInput.style.display = 'none';
+                mainBtn.innerText = 'Login';
+                toggleText.innerText = "Don't have an account?";
+                toggleBtn.innerText = 'Sign Up';
             } else {
-                alert('Please enter your mobile number and password');
+                title.innerHTML = '<h2 class="text-3xl font-bold">Create Account</h2><p class="text-slate-400 text-sm">Join our AI trading platform</p>';
+                nameInput.style.display = 'block';
+                mainBtn.innerText = 'Sign Up';
+                toggleText.innerText = 'Already have an account?';
+                toggleBtn.innerText = 'Login';
             }
         }
+
+        function processAuth() {
+            const phone = document.getElementById('userPhone').value;
+            const pass = document.getElementById('userPass').value;
+            
+            if (phone && pass) {
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('mainDashboard').classList.remove('hidden-dashboard');
+            } else {
+                alert('Please fill all details');
+            }
+        }
+
         function openModal() { document.getElementById('depositModal').classList.add('active'); }
         function closeModal() { document.getElementById('depositModal').classList.remove('active'); }
     </script>
