@@ -3,259 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DailyProfit - Smart Investment</title>
+    <title>Transaction History - DailyProfit</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary-gold: #ffcc00; --dark-bg: #0f172a; --card-bg: #1e293b; --text-white: #f8fafc; --success: #22c55e; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--dark-bg); color: var(--text-white); margin: 0; padding-bottom: 80px; }
-        
-        /* Navbar & Floating WhatsApp */
-        .navbar { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .logo { font-size: 22px; font-weight: bold; color: var(--primary-gold); }
-        .whatsapp-float { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; text-decoration: none; }
-
-        .container { padding: 20px; max-width: 500px; margin: auto; }
-        .balance-card { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 25px; border-radius: 20px; text-align: center; border: 1px solid rgba(255, 204, 0, 0.2); margin-bottom: 20px; }
-        .main-balance { font-size: 36px; font-weight: 800; color: var(--primary-gold); margin: 10px 0; }
-
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: var(--card-bg); padding: 15px; border-radius: 15px; text-align: center; border-bottom: 3px solid var(--primary-gold); }
-
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-deposit { background: var(--primary-gold); color: #000; }
-        .btn-withdraw { background: transparent; border: 2px solid var(--primary-gold); color: var(--primary-gold); }
-
-        /* Plans Section */
-        .plans-title { border-left: 4px solid var(--primary-gold); padding-left: 10px; margin: 30px 0 15px; }
-        .plan-card { background: var(--card-bg); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .plan-info h4 { margin: 0; color: var(--primary-gold); font-size: 16px; }
-        .plan-info p { margin: 5px 0 0; font-size: 12px; color: #94a3b8; }
-        .btn-buy { background: var(--success); color: white; padding: 8px 12px; border-radius: 8px; font-size: 12px; border: none; font-weight: bold; cursor: pointer; }
-
-        /* Popups (Modals) */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--card-bg); width: 85%; max-width: 400px; padding: 25px; border-radius: 20px; position: relative; }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-  .profile-container { position: relative; }
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 40px;
-    background: #1e293b;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px rgba(0,0,0,0.4);
-    z-index: 1000;
-    border-radius: 8px;
-    padding: 12px;
-    border: 1px solid #ffcc00;
-}
-.dropdown-menu.show { display: block; }
-.dropdown-menu a {
-    color: white;
-    text-decoration: none;
-    display: block;
-    padding: 8px 0;
-    font-size: 14px;
-}
-.dropdown-menu a:hover { color: #ffcc00; }
-  </style>
+        :root {
+            --primary-gold: #ffcc00;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-white: #f8fafc;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--dark-bg); color: var(--text-white); margin: 0; padding: 20px; }
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        .back-btn { color: var(--primary-gold); font-size: 20px; text-decoration: none; }
+        .history-card { background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 12px; border-left: 4px solid var(--primary-gold); position: relative; }
+        .status-badge { position: absolute; top: 15px; right: 15px; font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #334155; color: var(--primary-gold); }
+        .type-label { font-weight: bold; font-size: 16px; margin-bottom: 4px; }
+        .date-label { font-size: 12px; color: #94a3b8; }
+        .amount-label { color: var(--primary-gold); font-weight: bold; margin-top: 8px; font-size: 18px; }
+    </style>
 </head>
 <body>
 
-    <a href="https://wa.me/923297179402" class="whatsapp-float" target="_blank">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
-    <div class="navbar">
-    <div class="logo">DailyProfit</div>
-    <div class="profile-container">
-        <div class="profile-icon" onclick="toggleMenu()" style="cursor: pointer;">
-            <i class="fas fa-user-circle" style="font-size: 24px;"></i>
-        </div>
-        <div id="profileMenu" class="dropdown-menu">
-            <p id="displayUsername" style="color: #ffcc00; font-weight: bold; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px;">Loading...</p>
-            <a href="history.html" style="color: white; text-decoration: none; display: block; padding: 5px 0;"><i class="fas fa-history"></i> History</a>
-            <a href="#" onclick="logout()" style="color: white; text-decoration: none; display: block; padding: 5px 0;"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
+    <div class="header">
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <h2 style="margin: 0;">Transaction History</h2>
     </div>
-</div>
 
-    <div class="container">
-        <div class="balance-card">
-            <div style="font-size: 12px; color: #94a3b8;">AVAILABLE BALANCE</div>
-            <div class="main-balance">Rs. <span id="userBalance">0.00</span></div>
-            <div style="color: var(--success); font-size: 12px;"><i class="fas fa-check-circle"></i> Account Verified</div>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-box">
-                <i class="fas fa-chart-line" style="color: var(--primary-gold);"></i>
-                <div style="font-size: 10px; color: #94a3b8;">DAILY PROFIT</div>
-                <div id="dailyProfit">Rs. 0.00</div>
-            </div>
-            <div class="stat-box">
-                <i class="fas fa-university" style="color: var(--primary-gold);"></i>
-                <div style="font-size: 10px; color: #94a3b8;">WITHDRAWALS</div>
-                <div id="totalWithdraw">Rs. 0.00</div>
-            </div>
-        </div>
-
-        <button class="btn btn-deposit" onclick="openModal('depositModal')"><i class="fas fa-wallet"></i> Deposit Money</button>
-        <button class="btn btn-withdraw" onclick="openModal('withdrawModal')"><i class="fas fa-money-bill-wave"></i> Withdraw Funds</button>
-
-        <h3 class="plans-title">Investment Plans</h3>
-        
-        <div class="plan-card">
-            <div class="plan-info"><h4>Basic Plan</h4><p>Invest: 500 | Daily: 50 PKR</p></div>
-            <button class="btn-buy" onclick="buyPlan(500)">Buy Plan</button>
-        </div>
-        <div class="plan-card">
-            <div class="plan-info"><h4>Silver Plan</h4><p>Invest: 1000 | Daily: 110 PKR</p></div>
-            <button class="btn-buy" onclick="buyPlan(1000)">Buy Plan</button>
-        </div>
-        <div class="plan-card">
-            <div class="plan-info"><h4>Gold Plan</h4><p>Invest: 2000 | Daily: 250 PKR</p></div>
-            <button class="btn-buy" onclick="buyPlan(2000)">Buy Plan</button>
-        </div>
-        <div class="plan-card">
-            <div class="plan-info"><h4>Diamond Plan</h4><p>Invest: 5000 | Daily: 650 PKR</p></div>
-            <button class="btn-buy" onclick="buyPlan(5000)">Buy Plan</button>
-        </div>
-        <div class="plan-card">
-            <div class="plan-info"><h4>Business Plan</h4><p>Invest: 10000 | Daily: 1400 PKR</p></div>
-            <button class="btn-buy" onclick="buyPlan(10000)">Buy Plan</button>
-        </div>
-        <div class="plan-card">
-            <div class="plan-info"><h4>Expert Plan</h4><p>Invest: 25000 | Daily: 4000 PKR</p></div>
-            <button class="btn-buy" onclick="buyPlan(25000)">Buy Plan</button>
+    <div id="historyList">
+        <div style="text-align: center; margin-top: 50px; color: #94a3b8;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 30px; margin-bottom: 10px;"></i>
+            <p>Loading your transactions...</p>
         </div>
     </div>
 
-    <div id="depositModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('depositModal')">&times;</span>
-            <h3 style="color:var(--primary-gold)">Deposit Funds</h3>
-            <p style="font-size: 13px;">Please send amount to:</p>
-            <div style="background: #0f172a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                <p><strong>Method:</strong> EasyPaisa</p>
-                <p><strong>Name:</strong> Muhammad Touseef Ahmad</p>
-                <p><strong>Number:</strong> 03404146445</p>
-            </div>
-            <input type="number" placeholder="Enter Sent Amount">
-            <input type="text" placeholder="Transaction ID (TID)">
-            <button class="btn btn-deposit" style="margin-top:10px;">Submit Request</button>
-        </div>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    <div id="withdrawModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('withdrawModal')">&times;</span>
-            <h3 style="color:var(--primary-gold)">Withdraw Funds</h3>
-            <select id="method">
-                <option value="easypaisa">EasyPaisa</option>
-                <option value="jazzcash">JazzCash</option>
-            </select>
-            <input type="text" placeholder="Account Holder Name">
-            <input type="number" placeholder="Account Number">
-            <input type="number" placeholder="Amount to Withdraw">
-           <button class="btn btn-deposit" onclick="sendWithdrawRequest()">Send Request</button>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyBlygZa2EDyHBuCT8RTZENicnvYW-D-67g",
+            authDomain: "dailyprofit-b9600.firebaseapp.com",
+            projectId: "dailyprofit-b9600",
+            storageBucket: "dailyprofit-b9600.appspot.com",
+            messagingSenderId: "879891413676",
+            appId: "1:879891413676:web:bfba99ee5b95c45b957d09",
+            measurementId: "G-T5FJ81FP62"
+        };
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBlygZa2EDyHBuCT8RTZEMicnvYW-D-67g",
-    authDomain: "dailyprofit-b9600.firebaseapp.com",
-    projectId: "dailyprofit-b9600",
-    storageBucket: "dailyprofit-b9600.appspot.com",
-    messagingSenderId: "879891413676",
-    appId: "1:879891413676:web:bfba99ee5b95c45b957d09",
-    measurementId: "G-T5FJ81FP62"
-  };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-
-  let userCurrentBalance = 0;
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      onSnapshot(doc(db, "users", user.uid), (docSnap) => {
-        if (docSnap.exists()) {
-          const userData = docSnap.data();
-          userCurrentBalance = userData.balance || 0;
-          document.getElementById("userBalance").innerText = userCurrentBalance;
-          document.getElementById("dailyProfit").innerText = "Rs. " + (userData.dailyProfit || "0.00");
-          document.getElementById("totalWithdraw").innerText = "Rs. " + (userData.withdraw || "0.00");
-        }
-      });
-    }
-  });
-
-  window.openModal = function(id) { document.getElementById(id).style.display = 'flex'; }
-  window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; }
-
-  window.buyPlan = async function(planAmount) {
-    if (userCurrentBalance < planAmount) {
-      alert("Insufficient Balance! Aapka balance is plan ke liye kam hai.");
-    } else {
-      const user = auth.currentUser;
-      const requestRef = doc(db, "requests", user.uid + "_" + Date.now());
-      await setDoc(requestRef, {
-        uid: user.uid,
-        amount: planAmount,
-        status: "Processing",
-        type: "Plan Purchase",
-        time: new Date().toLocaleString()
-      });
-      alert("Request sent! Status: Processing (Admin approval pending)");
-    }
-  };// Profile menu ko kholne aur band karne ke liye
-window.toggleMenu = function() {
-    const menu = document.getElementById("profileMenu");
-    menu.classList.toggle("show");
-};
-
-// Logout karne ke liye function
-window.logout = function() {
-    auth.signOut().then(() => {
-        window.location.href = "login.html"; 
-    }).catch((error) => {
-        alert("Logout failed: " + error.message);
-    });
-};
-
-
-  window.sendWithdrawRequest = async function() {
-    const amount = Number(document.getElementById("withdrawAmount").value);
-    const method = document.getElementById("method").value;
-    const accName = document.getElementById("accName").value;
-    const accNum = document.getElementById("accNum").value;
-
-    if (!amount || amount < 100) return alert("Kam az kam 100 PKR withdraw karein.");
-
-    if (userCurrentBalance < amount) {
-      alert("Aapka balance na-kafi (Insufficient) hai!");
-    } else {
-      const user = auth.currentUser;
-      const withdrawRef = doc(db, "withdrawRequests", user.uid + "_" + Date.now());
-      await setDoc(withdrawRef, {
-        uid: user.uid,
-        amount: amount,
-        method: method,
-        accountName: accName,
-        accountNumber: accNum,
-        status: "Pending",
-        time: new Date().toLocaleString()
-      });
-      alert("Withdrawal request sent! Status: Processing");
-      closeModal('withdrawModal');
-    }
-  };
-</script>
-
-            
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const q = query(collection(db, "requests"), where("uid", "==", user.uid));
+                onSnapshot(q, (snapshot) => {
+                    let html = "";
+                    if (snapshot.empty) {
+                        html = "<p style='text-align:center; color:#94a3b8;'>No transactions found.</p>";
+                    } else {
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            html += `
+                                <div class="history-card">
+                                    <span class="status-badge">${data.status || 'Pending'}</span>
+                                    <div class="type-label">${data.type || 'Deposit'}</div>
+                                    <div class="date-label">${data.time || 'N/A'}</div>
+                                    <div class="amount-label">Rs. ${data.amount}</div>
+                                </div>
+                            `;
+                        });
+                    }
+                    document.getElementById("historyList").innerHTML = html;
+                });
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+    </script>
+</body>
+</html>
