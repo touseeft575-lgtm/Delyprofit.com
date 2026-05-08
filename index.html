@@ -9,41 +9,33 @@
         :root { --primary-gold: #ffcc00; --dark-bg: #0f172a; --card-bg: #1e293b; --text-gray: #94a3b8; --accent-blue: #00d2ff; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--dark-bg); color: white; margin: 0; padding: 15px; padding-bottom: 80px; }
         
-        /* Top MI Style Header */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .logo { font-size: 20px; font-weight: bold; }
         .profile-menu { position: relative; cursor: pointer; }
         .profile-icon { font-size: 28px; color: var(--primary-gold); }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 35px; background: var(--card-bg); min-width: 150px; border: 1px solid var(--primary-gold); border-radius: 10px; z-index: 1000; box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 35px; background: var(--card-bg); min-width: 150px; border: 1px solid var(--primary-gold); border-radius: 10px; z-index: 1000; }
         .dropdown-content a { color: white; padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 14px; border-bottom: 1px solid #334155; }
-        .dropdown-content a:last-child { border-bottom: none; }
         .profile-menu:hover .dropdown-content { display: block; }
 
-        /* Balance Card */
         .balance-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,204,0,0.3); text-align: center; margin-bottom: 25px; }
         .balance-amount { font-size: 36px; font-weight: 800; color: var(--primary-gold); margin: 10px 0; }
         
-        /* Action Buttons Grid */
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .action-card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #334155; cursor: pointer; transition: 0.3s; }
+        .action-card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #334155; cursor: pointer; }
         .action-card i { font-size: 24px; color: var(--primary-gold); margin-bottom: 10px; }
 
-        /* Investment Plans Styling */
         .section-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; border-left: 4px solid var(--primary-gold); padding-left: 10px; }
         .plan-card { background: var(--card-bg); padding: 18px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
         .plan-info h3 { margin: 0; color: var(--accent-blue); font-size: 16px; }
         .plan-info p { margin: 5px 0 0; font-size: 13px; color: var(--text-gray); }
         .invest-btn { background: var(--accent-blue); color: #0f172a; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        /* Modals for Deposit & Withdraw */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; width: 90%; max-width: 400px; background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid var(--primary-gold); box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; width: 90%; max-width: 400px; background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid var(--primary-gold); }
         .modal input, .modal select { width: 100%; padding: 12px; margin: 10px 0; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 8px; box-sizing: border-box; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1500; }
         
-        /* Floating WhatsApp Support */
-        .whatsapp-btn { position: fixed; bottom: 85px; right: 20px; background: #25d366; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000; }
+        .whatsapp-btn { position: fixed; bottom: 85px; right: 20px; background: #25d366; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; text-decoration: none; z-index: 1000; }
         
-        /* Bottom Navbar */
         .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #334155; }
         .nav-item { text-align: center; color: var(--text-gray); text-decoration: none; font-size: 11px; }
         .nav-item.active { color: var(--primary-gold); }
@@ -57,7 +49,7 @@
         <div class="profile-menu">
             <i class="fas fa-user-circle profile-icon"></i>
             <div class="dropdown-content">
-                <a href="history.html"><i class="fas fa-history"></i> History</a>
+                <a href="#" onclick="showHistory()"><i class="fas fa-history"></i> History</a>
                 <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </div>
@@ -66,10 +58,6 @@
     <div class="balance-card">
         <div style="color: var(--text-gray); font-size: 13px;">TOTAL BALANCE</div>
         <div class="balance-amount">Rs. <span id="userBalance">0.00</span></div>
-        <div style="display: flex; justify-content: space-around; font-size: 12px; margin-top: 15px;">
-            <div>Daily Profit<br><b>Rs. 0</b></div>
-            <div>Withdrawals<br><b>Rs. 0</b></div>
-        </div>
     </div>
 
     <div class="action-grid">
@@ -82,51 +70,54 @@
     </div>
 
     <div class="section-title">Investment Plans</div>
-    
-    <div id="plansList">
-        </div>
+    <div id="plansList"></div>
 
     <div id="overlay" class="overlay" onclick="closeAllModals()"></div>
+    <div id="investModal" class="modal">
+        <h3 id="modalPlanName" style="color: var(--primary-gold); margin-top:0;">Confirm Investment</h3>
+        <div style="background: #0f172a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+            <p id="modalPlanDetails" style="margin:0; font-size:14px; line-height: 1.6;"></p>
+        </div>
+        <p style="font-size: 13px; color: #94a3b8;">Kya aap ye plan active karna chahte hain?</p>
+        <div style="display: flex; gap: 10px;">
+            <button class="invest-btn" style="width:100%; background: #22c55e;" onclick="confirmActivePlan()">Confirm</button>
+            <button class="invest-btn" style="width:100%; background: #ef4444;" onclick="closeAllModals()">Cancel</button>
+        </div>
+    </div>
 
     <div id="depositModal" class="modal">
-        <h3 style="color: var(--primary-gold); margin-top:0;">Deposit Money</h3>
-        <div style="background: #0f172a; padding: 12px; border-radius: 10px; border-left: 4px solid var(--primary-gold); margin-bottom: 15px;">
-            <p style="margin:0; font-size:12px; color: var(--text-gray);">EasyPaisa (Muhammad Touseef Ahmad)</p>
-            <p style="margin:5px 0 0; font-size:16px; font-weight:bold; color: var(--primary-gold);">03404146445</p>
+        <h3 style="color: var(--primary-gold);">Deposit Money</h3>
+        <div style="background: #0f172a; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 14px;">
+            EasyPaisa: 03404146445<br>Name: Muhammad Touseef Ahmad
         </div>
-        <input type="number" id="depAmount" placeholder="Enter Amount (Min 500)">
-        <input type="text" id="depTID" placeholder="Transaction ID (TID)">
-        <button class="invest-btn" style="width:100%; margin-top:10px;" onclick="submitDeposit()">Submit Deposit</button>
+        <input type="number" id="depAmount" placeholder="Enter Amount">
+        <input type="text" id="depTID" placeholder="Transaction ID">
+        <button class="invest-btn" style="width:100%" onclick="submitDeposit()">Submit Deposit</button>
     </div>
 
     <div id="withdrawModal" class="modal">
-        <h3 style="color: var(--primary-gold); margin-top:0;">Withdraw Funds</h3>
-        <input type="number" id="withAmount" placeholder="Withdraw Amount">
-        <input type="text" id="withName" placeholder="Account Holder Name">
+        <h3 style="color: var(--primary-gold);">Withdraw Funds</h3>
+        <input type="number" id="withAmount" placeholder="Amount">
+        <input type="text" id="withName" placeholder="Account Name">
         <input type="text" id="withNumber" placeholder="Account Number">
         <select id="withMethod">
             <option value="EasyPaisa">EasyPaisa</option>
             <option value="JazzCash">JazzCash</option>
         </select>
-        <button class="invest-btn" style="width:100%; margin-top:10px;" onclick="submitWithdraw()">Request Withdrawal</button>
+        <button class="invest-btn" style="width:100%" onclick="submitWithdraw()">Request Withdraw</button>
     </div>
 
     <div class="navbar">
         <a href="#" class="nav-item active"><i class="fas fa-home"></i>Home</a>
-        <a href="history.html" class="nav-item"><i class="fas fa-clock-rotate-left"></i>History</a>
-        <a href="https://wa.me/923297179402" class="nav-item"><i class="fab fa-whatsapp" style="color:#25d366"></i>Support</a>
+        <a href="#" onclick="showHistory()" class="nav-item"><i class="fas fa-history"></i>History</a>
+        <a href="https://wa.me/923297179402" class="nav-item"><i class="fab fa-whatsapp"></i>Support</a>
     </div>
-
-    <a href="https://wa.me/923297179402" class="whatsapp-btn" target="_blank">
-        <i class="fab fa-whatsapp"></i>
-    </a>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMIcnvYW-D-67g",
             authDomain: "dailyprofit-b9600.firebaseapp.com",
@@ -140,92 +131,54 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // UI Generation for Plans
-        const plansData = [
-            { inv: 500, daily: 120 },
-            { inv: 1000, daily: 240 },
-            { inv: 2000, daily: 480 },
-            { inv: 5000, daily: 1200 },
-            { inv: 10000, daily: 2500 },
-            { inv: 20000, daily: 5200 },
-            { inv: 50000, daily: 13500 },
-            { inv: 100000, daily: 30000 }
+        let selectedPlan = null;
+        const plans = [
+            { inv: 500, daily: 120 }, { inv: 1000, daily: 240 }, { inv: 2000, daily: 480 },
+            { inv: 5000, daily: 1200 }, { inv: 10000, daily: 2500 }, { inv: 20000, daily: 5200 },
+            { inv: 50000, daily: 13500 }, { inv: 100000, daily: 30000 }
         ];
 
-        const renderPlans = () => {
-            const container = document.getElementById('plansList');
-            container.innerHTML = plansData.map(p => `
-                <div class="plan-card">
-                    <div class="plan-info">
-                        <h3>AI Plan ${p.inv}</h3>
-                        <p>Daily: Rs. ${p.daily} | 2 Months Everyday</p>
-                    </div>
-                    <button class="invest-btn" onclick="buyPlan(${p.inv})">Invest Now</button>
+        // Rendering Plans
+        const list = document.getElementById('plansList');
+        list.innerHTML = plans.map(p => `
+            <div class="plan-card">
+                <div class="plan-info">
+                    <h3>AI Plan ${p.inv}</h3>
+                    <p>Daily: Rs. ${p.daily} | 60 Days</p>
                 </div>
-            `).join('');
+                <button class="invest-btn" onclick="buyPlan(${p.inv}, ${p.daily})">Invest Now</button>
+            </div>
+        `).join('');
+
+        window.buyPlan = (inv, daily) => {
+            selectedPlan = { inv, daily };
+            document.getElementById('modalPlanName').innerText = `AI Plan ${inv}`;
+            document.getElementById('modalPlanDetails').innerHTML = `<b>Daily Profit:</b> Rs. ${daily}<br><b>Total Days:</b> 60`;
+            showModal('investModal');
         };
-        renderPlans();
 
-        // Auth & Real-time Balance
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                onSnapshot(doc(db, "users", user.uid), (snap) => {
-                    if (snap.exists()) {
-                        document.getElementById('userBalance').innerText = snap.data().balance.toLocaleString();
-                    }
-                });
-            } else {
-                window.location.href = "login.html";
-            }
-        });
-
-        // Modal Controls
         window.showModal = (id) => {
             document.getElementById(id).style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         };
+
         window.closeAllModals = () => {
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
             document.getElementById('overlay').style.display = 'none';
         };
 
-        // Actions
-        window.submitDeposit = async () => {
-            const amount = document.getElementById('depAmount').value;
-            const tid = document.getElementById('depTID').value;
-            if (!amount || !tid) return alert("Please fill all details!");
-            
-            await addDoc(collection(db, "deposits"), {
-                uid: auth.currentUser.uid,
-                email: auth.currentUser.email,
-                amount: amount,
-                tid: tid,
-                status: "pending",
-                timestamp: serverTimestamp()
-            });
-            alert("Deposit request submitted! Admin will verify soon.");
+        window.confirmActivePlan = async () => {
+            alert(`Plan ${selectedPlan.inv} active karne ki request bhej di gayi hai!`);
             closeAllModals();
         };
 
-        window.submitWithdraw = async () => {
-            const amount = document.getElementById('withAmount').value;
-            const name = document.getElementById('withName').value;
-            const num = document.getElementById('withNumber').value;
-            const method = document.getElementById('withMethod').value;
-            
-            if (!amount || !num) return alert("Complete the form!");
-            
-            await addDoc(collection(db, "withdrawals"), {
-                uid: auth.currentUser.uid,
-                amount, name, num, method,
-                status: "pending",
-                timestamp: serverTimestamp()
-            });
-            alert("Withdrawal request sent!");
-            closeAllModals();
-        };
-
-        window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                onSnapshot(doc(db, "users", user.uid), (snap) => {
+                    if (snap.exists()) document.getElementById('userBalance').innerText = snap.data().balance;
+                });
+            }
+        });
     </script>
 </body>
 </html>
