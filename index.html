@@ -6,88 +6,97 @@
     <title>AI Investment Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0b1120; color: white; }
+        body { background-color: #0b1120; color: white; overflow-x: hidden; }
         .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        /* Login Overlay */
+        #loginOverlay {
+            position: fixed; inset: 0; background: #0b1120; z-index: 2000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+        }
+        .hidden-dashboard { display: none; }
+        
+        /* Modal for Deposit */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 50; }
         .modal.active { display: flex; }
-        /* Support Button Styling */
-        .support-btn { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 12px 20px; border-radius: 50px; display: flex; align-items: center; gap: 8px; font-weight: bold; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); z-index: 100; text-decoration: none; }
     </style>
 </head>
-<body class="p-4 font-sans pb-24">
+<body>
 
-    <div class="text-center mb-8">
-        <p class="text-cyan-400 font-bold tracking-widest text-sm mb-2">LIVE EARNINGS</p>
-        <h1 class="text-6xl font-mono tracking-tighter">$0.00000000</h1>
-    </div>
-
-    <div class="grid grid-cols-3 gap-3 mb-8">
-        <button onclick="openModal()" class="glass-card p-4 rounded-2xl flex flex-col items-center hover:bg-slate-700 transition">
-            <span class="text-2xl mb-1">💳</span>
-            <span class="text-xs font-medium">Deposit</span>
-        </button>
-        <div class="glass-card p-4 rounded-2xl flex flex-col items-center border-purple-500/50 border-2">
-            <span class="text-2xl mb-1">⚙️</span>
-            <span class="text-xs font-medium">Invest</span>
-        </div>
-        <div class="glass-card p-4 rounded-2xl flex flex-col items-center">
-            <span class="text-2xl mb-1">💰</span>
-            <span class="text-xs font-medium">Withdraw</span>
-        </div>
-    </div>
-
-    <div class="glass-card p-6 rounded-3xl relative overflow-hidden mb-6">
-        <div class="flex justify-between items-start mb-6">
-            <h2 class="text-2xl font-bold">GPT Plan</h2>
-            <span class="bg-green-500/20 text-green-400 text-xs px-3 py-1 rounded-full border border-green-500/30">Active</span>
-        </div>
-        <div class="grid grid-cols-2 gap-4 mb-6">
-            <div>
-                <p class="text-slate-400 text-xs mb-1">Profit</p>
-                <p class="text-green-400 font-bold text-lg">0.15%</p>
+    <div id="loginOverlay">
+        <div class="w-full max-w-sm glass-card p-8 rounded-3xl text-center">
+            <h2 class="text-3xl font-bold mb-2">Welcome</h2>
+            <p class="text-slate-400 mb-8 text-sm">Please login to access your dashboard</p>
+            
+            <div class="space-y-4">
+                <input type="text" id="userPhone" placeholder="Mobile Number" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:outline-none focus:border-cyan-500">
+                <input type="password" id="userPass" placeholder="Password" class="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl focus:outline-none focus:border-cyan-500">
+                <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 rounded-xl font-bold text-lg shadow-lg">Login / Sign Up</button>
             </div>
-            <div>
-                <p class="text-slate-400 text-xs mb-1">Duration</p>
-                <p class="font-bold text-lg text-slate-200">2160 hours</p>
-            </div>
+            <p class="mt-6 text-xs text-slate-500 italic">Secure AI-Powered Trading Environment</p>
         </div>
-        <button class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-cyan-500/20">
-            Invest Now
-        </button>
     </div>
 
-    <a href="https://wa.me/923297179402" target="_blank" style="position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 12px 24px; border-radius: 50px; display: flex; align-items: center; gap: 10px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; text-decoration: none; font-family: sans-serif; font-size: 16px;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" style="width: 25px; height: 25px;">
-    <span>Support</span>
-</a>
+    <div id="mainDashboard" class="hidden-dashboard p-4">
+        <div class="text-center mb-8 mt-4">
+            <p class="text-cyan-400 font-bold tracking-widest text-sm mb-2">LIVE EARNINGS</p>
+            <h1 class="text-6xl font-mono tracking-tighter">$0.00000000</h1>
+        </div>
 
+        <div class="grid grid-cols-3 gap-3 mb-8">
+            <button onclick="openModal()" class="glass-card p-4 rounded-2xl flex flex-col items-center">
+                <span class="text-2xl mb-1">💳</span>
+                <span class="text-xs font-medium">Deposit</span>
+            </button>
+            <div class="glass-card p-4 rounded-2xl flex flex-col items-center border-purple-500/50 border-2">
+                <span class="text-2xl mb-1">⚙️</span>
+                <span class="text-xs font-medium">Invest</span>
+            </div>
+            <div class="glass-card p-4 rounded-2xl flex flex-col items-center">
+                <span class="text-2xl mb-1">💰</span>
+                <span class="text-xs font-medium">Withdraw</span>
+            </div>
+        </div>
 
+        <div class="glass-card p-6 rounded-3xl relative overflow-hidden mb-6">
+            <div class="flex justify-between items-start mb-6">
+                <h2 class="text-2xl font-bold">GPT Plan</h2>
+                <span class="bg-green-500/20 text-green-400 text-xs px-3 py-1 rounded-full border border-green-500/30">Active</span>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div><p class="text-slate-400 text-xs">Profit</p><p class="text-green-400 font-bold">0.15%</p></div>
+                <div><p class="text-slate-400 text-xs">Duration</p><p class="font-bold">2160 hours</p></div>
+            </div>
+            <button class="w-full bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 rounded-2xl font-bold">Invest Now</button>
+        </div>
+    </div>
+
+    <a href="https://wa.me/923297179402" target="_blank" style="position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 12px 24px; border-radius: 50px; display: flex; align-items: center; gap: 10px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; text-decoration: none; font-family: sans-serif;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" style="width: 25px; height: 25px;">
+        <span>Support</span>
     </a>
 
     <div id="depositModal" class="modal px-4">
         <div class="glass-card w-full max-w-sm p-6 rounded-3xl text-center">
-            <div class="text-4xl mb-4 text-cyan-400">📲</div>
-            <h3 class="text-xl font-bold mb-2">EasyPaisa Deposit</h3>
-            <p class="text-slate-400 text-sm mb-6">Niche diye gaye number par payment bheinjein aur screenshot niche diye gaye support button par send karein.</p>
-            
-            <div class="bg-slate-900/50 p-4 rounded-2xl border border-dashed border-cyan-500/50 mb-6">
-                <p class="text-xs text-slate-500 mb-1">Account Number</p>
-                <p class="text-2xl font-mono font-bold text-cyan-400">92440902</p>
-                <p class="text-xs text-slate-400 mt-2">Account Name: Smart Life Store</p>
-            </div>
-
-            <button onclick="closeModal()" class="w-full bg-slate-700 py-3 rounded-xl font-medium">Close</button>
+            <h3 class="text-xl font-bold mb-4 text-cyan-400 font-mono">92440902</h3>
+            <p class="text-slate-400 text-sm mb-6">Niche diye gaye number par payment bheinjein aur screenshot support ko dein.</p>
+            <button onclick="closeModal()" class="w-full bg-slate-700 py-3 rounded-xl">Close</button>
         </div>
     </div>
 
     <script>
-        function openModal() {
-            document.getElementById('depositModal').classList.add('active');
+        function handleLogin() {
+            const phone = document.getElementById('userPhone').value;
+            const pass = document.getElementById('userPass').value;
+            if(phone && pass) {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainDashboard').classList.remove('hidden-dashboard');
+            } else {
+                alert('Please enter your mobile number and password');
+            }
         }
-        function closeModal() {
-            document.getElementById('depositModal').classList.remove('active');
-        }
+        function openModal() { document.getElementById('depositModal').classList.add('active'); }
+        function closeModal() { document.getElementById('depositModal').classList.remove('active'); }
     </script>
-
 </body>
 </html>
