@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Investment Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0b1120; color: white; font-family: sans-serif; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); border: 1px solid #334155; border-radius: 1rem; }
+        .btn-gradient { background: linear-gradient(90deg, #06b6d4, #10b981); }
+    </style>
+</head>
+<body class="p-4">
+
+    <div class="text-center mb-6">
+        <p class="text-cyan-400 font-bold text-sm">LIVE EARNINGS</p>
+        <h1 class="text-5xl font-mono mt-2">$0.00000000</h1>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="glass-card p-4 text-center">
+            <div class="text-cyan-400 mb-2">💳</div>
+            <p class="text-xs">Deposit</p>
+        </div>
+        <div class="glass-card p-4 text-center border-purple-500">
+            <div class="text-purple-400 mb-2">⚙️</div>
+            <p class="text-xs">Invest</p>
+        </div>
+        <div class="glass-card p-4 text-center">
+            <div class="text-green-400 mb-2">💰</div>
+            <p class="text-xs">Withdraw</p>
+        </div>
+    </div>
+
+    <div class="glass-card p-6 mb-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">GPT Plan</h2>
+            <span class="bg-green-900 text-green-300 px-3 py-1 rounded-full text-xs">Active</span>
+        </div>
+        <div class="flex justify-between mb-4">
+            <div>
+                <p class="text-gray-400 text-xs">Profit</p>
+                <p class="text-green-400 font-bold">0.15%</p>
+            </div>
+            <div>
+                <p class="text-gray-400 text-xs">Duration</p>
+                <p class="font-bold">2160 hours</p>
+            </div>
+        </div>
+        <button class="w-full btn-gradient py-3 rounded-xl font-bold">Invest Now</button>
+    </div>
+
+    <div class="glass-card p-4 border-blue-500">
+        <div class="flex items-start gap-3">
+            <span class="text-blue-400">ℹ️</span>
+            <div class="text-sm">
+                <p class="mb-2">To pay with EasyPaisa, dial **\*786#**</p>
+                <ol class="list-decimal ml-4 text-gray-300 space-y-1">
+                    <li>Select Send Money</li>
+                    <li>Select EasyPaisa Account</li>
+                    <li>Enter: <span class="text-white font-bold">92440902</span></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
