@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DailyProfit</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e293b; padding: 30px; border-radius: 20px; width: 320px; border: 1px solid #ffcc00; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; background: #ffcc00; color: #0f172a; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="color: #ffcc00;">Welcome Back</h2>
+        <input type="email" id="email" placeholder="Email Address">
+        <input type="password" id="pass" placeholder="Password">
+        <button class="btn" onclick="login()">Login Now</button>
+        <p>Don't have an account? <a href="signup.html" style="color: #ffcc00;">Register</a></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBlygZa2EDyHBuCT8RTZENicnvYW-D-67g",
+            authDomain: "dailyprofit-b9600.firebaseapp.com",
+            projectId: "dailyprofit-b9600",
+            storageBucket: "dailyprofit-b9600.appspot.com",
+            messagingSenderId: "879891413676",
+            appId: "1:879891413676:web:bfba99ee5b95c45b957d09"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.login = async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                window.location.href = "index.html";
+            } catch (err) { alert(err.message); }
+        };
+    </script>
+</body>
+</html>
