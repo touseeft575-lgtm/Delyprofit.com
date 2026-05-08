@@ -3,154 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DailyProfit - All-in-One Dashboard</title>
+    <title>DailyProfit - Professional Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #ffcc00; --bg: #0b0f1a; --card: #161c2d; --text: #94a3b8; --success: #22c55e; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; padding-bottom: 100px; }
+        :root { --primary-gold: #ffcc00; --dark-bg: #0f172a; --card-bg: #1e293b; --text-gray: #94a3b8; --accent-blue: #00d2ff; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--dark-bg); color: white; margin: 0; padding: 15px; padding-bottom: 80px; }
         
+        /* Top MI Style Header */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .user-profile { background: var(--card); padding: 5px 12px; border-radius: 20px; display: flex; align-items: center; gap: 8px; border: 1px solid #2d364d; }
+        .logo { font-size: 20px; font-weight: bold; }
+        .profile-menu { position: relative; cursor: pointer; }
+        .profile-icon { font-size: 28px; color: var(--primary-gold); }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 35px; background: var(--card-bg); min-width: 150px; border: 1px solid var(--primary-gold); border-radius: 10px; z-index: 1000; box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
+        .dropdown-content a { color: white; padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 14px; border-bottom: 1px solid #334155; }
+        .dropdown-content a:last-child { border-bottom: none; }
+        .profile-menu:hover .dropdown-content { display: block; }
 
-        /* Wallet Card */
-        .wallet-card { 
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 30px 20px; border-radius: 24px; border: 1px solid rgba(255,204,0,0.2);
-            text-align: center; position: relative; margin-bottom: 25px;
-        }
-        .bal-amount { font-size: 42px; font-weight: 800; color: var(--gold); margin: 10px 0; }
-
-        /* Action Buttons */
-        .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .action-btn { 
-            background: var(--card); padding: 20px; border-radius: 18px; text-align: center;
-            border: 1px solid #2d364d; cursor: pointer; transition: 0.3s;
-        }
-        .action-btn i { font-size: 24px; color: var(--gold); margin-bottom: 8px; display: block; }
-
-
-        /* Plans Section */
-      <div class="section-title">Investment Plans</div>
-<div class="plans-container">
-    <div class="plan-card">
-        <div class="plan-info">
-            <h3>AI Plan 500</h3>
-            <p>Daily: Rs. 120 | 60 Days</p>
-        </div>
-        <button class="invest-btn" onclick="buyPlan('AI Plan 500', 500, 120)">Invest Now</button>
-    </div>
-
-    <div class="plan-card">
-        <div class="plan-info">
-            <h3>AI Plan 1000</h3>
-            <p>Daily: Rs. 240 | 60 Days</p>
-        </div>
-        <button class="invest-btn" onclick="buyPlan('AI Plan 1000', 1000, 240)">Invest Now</button>
-    </div>
-
-    <div class="plan-card">
-        <div class="plan-info">
-            <h3>AI Plan 2000</h3>
-            <p>Daily: Rs. 480 | 60 Days</p>
-        </div>
-        <button class="invest-btn" onclick="buyPlan('AI Plan 2000', 2000, 480)">Invest Now</button>
-    </div>
-</div>
-
-<style>
-    .plans-container { display: flex; flex-direction: column; gap: 15px; padding: 10px; }
-    .plan-card { 
-        background: #1e293b; border: 1px solid #334155; border-radius: 12px; 
-        padding: 15px; display: flex; justify-content: space-between; align-items: center;
-    }
-    .plan-info h3 { color: #00d2ff; margin: 0; font-size: 18px; }
-    .plan-info p { color: #94a3b8; margin: 5px 0 0; font-size: 14px; }
-    .invest-btn { 
-        background: #00d2ff; color: #0f172a; border: none; padding: 10px 18px; 
-        border-radius: 8px; font-weight: bold; cursor: pointer;
-    }
-</style>
-
-
-        /* Success & Deposit Overlay */
-        #successOverlay, #depositModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; width: 85%; max-width: 380px; }
-        .modal-box { background: var(--card); padding: 25px; border-radius: 25px; border: 1px solid var(--gold); text-align: center; }
-        #modalOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; }
+        /* Balance Card */
+        .balance-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,204,0,0.3); text-align: center; margin-bottom: 25px; }
+        .balance-amount { font-size: 36px; font-weight: 800; color: var(--primary-gold); margin: 10px 0; }
         
-        .support-fab { position: fixed; bottom: 30px; right: 20px; background: #25d366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; color: white; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 100; }
+        /* Action Buttons Grid */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .action-card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #334155; cursor: pointer; transition: 0.3s; }
+        .action-card i { font-size: 24px; color: var(--primary-gold); margin-bottom: 10px; }
+
+        /* Investment Plans Styling */
+        .section-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; border-left: 4px solid var(--primary-gold); padding-left: 10px; }
+        .plan-card { background: var(--card-bg); padding: 18px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .plan-info h3 { margin: 0; color: var(--accent-blue); font-size: 16px; }
+        .plan-info p { margin: 5px 0 0; font-size: 13px; color: var(--text-gray); }
+        .invest-btn { background: var(--accent-blue); color: #0f172a; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* Modals for Deposit & Withdraw */
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; width: 90%; max-width: 400px; background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid var(--primary-gold); box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .modal input, .modal select { width: 100%; padding: 12px; margin: 10px 0; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 8px; box-sizing: border-box; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1500; }
+        
+        /* Floating WhatsApp Support */
+        .whatsapp-btn { position: fixed; bottom: 85px; right: 20px; background: #25d366; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000; }
+        
+        /* Bottom Navbar */
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #334155; }
+        .nav-item { text-align: center; color: var(--text-gray); text-decoration: none; font-size: 11px; }
+        .nav-item.active { color: var(--primary-gold); }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div style="font-size: 22px; font-weight: 800;">Daily<span style="color:var(--gold)">Profit</span></div>
-        <div class="user-profile"><i class="fas fa-user-circle"></i> <span id="userEmail">User</span></div>
-    </div>
-
-    <div class="wallet-card">
-        <div style="color:var(--text); font-size:12px;">TOTAL BALANCE</div>
-        <div class="bal-amount">Rs. <span id="balance">0.00</span></div>
-    </div>
-
-    <div class="action-row">
-        <div class="action-btn" onclick="openDeposit()">
-            <i class="fas fa-university"></i>
-            <span>Deposit</span>
-        </div>
-        <div class="action-btn" onclick="location.href='withdraw.html'">
-            <i class="fas fa-wallet"></i>
-            <span>Withdraw</span>
+        <div class="logo">DailyProfit</div>
+        <div class="profile-menu">
+            <i class="fas fa-user-circle profile-icon"></i>
+            <div class="dropdown-content">
+                <a href="history.html"><i class="fas fa-history"></i> History</a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
         </div>
     </div>
 
-    <h3 style="margin-bottom:15px;">Investment Plans</h3>
+    <div class="balance-card">
+        <div style="color: var(--text-gray); font-size: 13px;">TOTAL BALANCE</div>
+        <div class="balance-amount">Rs. <span id="userBalance">0.00</span></div>
+        <div style="display: flex; justify-content: space-around; font-size: 12px; margin-top: 15px;">
+            <div>Daily Profit<br><b>Rs. 0</b></div>
+            <div>Withdrawals<br><b>Rs. 0</b></div>
+        </div>
+    </div>
+
+    <div class="action-grid">
+        <div class="action-card" onclick="showModal('depositModal')">
+            <i class="fas fa-university"></i><br>Deposit
+        </div>
+        <div class="action-card" onclick="showModal('withdrawModal')">
+            <i class="fas fa-wallet"></i><br>Withdraw
+        </div>
+    </div>
+
+    <div class="section-title">Investment Plans</div>
     
-    <div class="plan-card">
-        <div class="plan-info">
-            <h4 style="margin:0; color:var(--gold);">Basic Plan</h4>
-            <p style="margin:5px 0; font-size:12px; color:var(--text);">Invest: 500 | Daily: 50</p>
+    <div id="plansList">
         </div>
-        <button class="buy-btn" onclick="activatePlan('Basic', 500)">Buy</button>
+
+    <div id="overlay" class="overlay" onclick="closeAllModals()"></div>
+
+    <div id="depositModal" class="modal">
+        <h3 style="color: var(--primary-gold); margin-top:0;">Deposit Money</h3>
+        <div style="background: #0f172a; padding: 12px; border-radius: 10px; border-left: 4px solid var(--primary-gold); margin-bottom: 15px;">
+            <p style="margin:0; font-size:12px; color: var(--text-gray);">EasyPaisa (Muhammad Touseef Ahmad)</p>
+            <p style="margin:5px 0 0; font-size:16px; font-weight:bold; color: var(--primary-gold);">03404146445</p>
+        </div>
+        <input type="number" id="depAmount" placeholder="Enter Amount (Min 500)">
+        <input type="text" id="depTID" placeholder="Transaction ID (TID)">
+        <button class="invest-btn" style="width:100%; margin-top:10px;" onclick="submitDeposit()">Submit Deposit</button>
     </div>
 
-    <div class="plan-card">
-        <div class="plan-info">
-            <h4 style="margin:0; color:var(--gold);">Silver Plan</h4>
-            <p style="margin:5px 0; font-size:12px; color:var(--text);">Invest: 1000 | Daily: 110</p>
-        </div>
-        <button class="buy-btn" onclick="activatePlan('Silver', 1000)">Buy</button>
+    <div id="withdrawModal" class="modal">
+        <h3 style="color: var(--primary-gold); margin-top:0;">Withdraw Funds</h3>
+        <input type="number" id="withAmount" placeholder="Withdraw Amount">
+        <input type="text" id="withName" placeholder="Account Holder Name">
+        <input type="text" id="withNumber" placeholder="Account Number">
+        <select id="withMethod">
+            <option value="EasyPaisa">EasyPaisa</option>
+            <option value="JazzCash">JazzCash</option>
+        </select>
+        <button class="invest-btn" style="width:100%; margin-top:10px;" onclick="submitWithdraw()">Request Withdrawal</button>
     </div>
 
-    <a href="https://wa.me/923297179402" class="support-fab" target="_blank">
+    <div class="navbar">
+        <a href="#" class="nav-item active"><i class="fas fa-home"></i>Home</a>
+        <a href="history.html" class="nav-item"><i class="fas fa-clock-rotate-left"></i>History</a>
+        <a href="https://wa.me/923297179402" class="nav-item"><i class="fab fa-whatsapp" style="color:#25d366"></i>Support</a>
+    </div>
+
+    <a href="https://wa.me/923297179402" class="whatsapp-btn" target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <div id="depositModal" class="modal-box">
-        <h3 style="color:var(--gold); margin-top:0;">Deposit Money</h3>
-        <div style="background:#0b0f1a; padding:15px; border-radius:15px; border-left:4px solid var(--gold); margin-bottom:15px; text-align:left;">
-            <p style="margin:0; font-size:11px; color:var(--text);">EasyPaisa (Touseef Ahmad)</p>
-            <p style="margin:5px 0; font-size:18px; font-weight:bold; color:var(--gold);">03404146445</p>
-        </div>
-        <input type="number" id="depAmount" placeholder="Amount" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #333; background:#0b0f1a; color:white;">
-        <input type="text" id="depTID" placeholder="Transaction ID (TID)" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:1px solid #333; background:#0b0f1a; color:white;">
-        <button onclick="submitDeposit()" style="width:100%; background:var(--gold); border:none; padding:15px; border-radius:10px; font-weight:bold;">Submit Request</button>
-        <button onclick="closeDeposit()" style="background:none; border:none; color:var(--text); margin-top:10px;">Close</button>
-    </div>
-
-    <div id="successOverlay" class="modal-box" style="border-color:var(--success);">
-        <i class="fas fa-check-circle" style="font-size:50px; color:var(--success); margin-bottom:15px;"></i>
-        <h2 id="planNameTitle">Active!</h2>
-        <p>Aapka plan kamyabi se shuru ho gaya hai aur dashboard par show ho jayega.</p>
-        <button onclick="location.reload()" style="background:var(--success); color:white; border:none; padding:12px 30px; border-radius:10px; margin-top:10px;">Theek Hai</button>
-    </div>
-
-    <div id="modalOverlay" onclick="closeDeposit()"></div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, updateDoc, collection, addDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMIcnvYW-D-67g",
             authDomain: "dailyprofit-b9600.firebaseapp.com",
@@ -161,41 +137,95 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
+        // UI Generation for Plans
+        const plansData = [
+            { inv: 500, daily: 120 },
+            { inv: 1000, daily: 240 },
+            { inv: 2000, daily: 480 },
+            { inv: 5000, daily: 1200 },
+            { inv: 10000, daily: 2500 },
+            { inv: 20000, daily: 5200 },
+            { inv: 50000, daily: 13500 },
+            { inv: 100000, daily: 30000 }
+        ];
+
+        const renderPlans = () => {
+            const container = document.getElementById('plansList');
+            container.innerHTML = plansData.map(p => `
+                <div class="plan-card">
+                    <div class="plan-info">
+                        <h3>AI Plan ${p.inv}</h3>
+                        <p>Daily: Rs. ${p.daily} | 2 Months Everyday</p>
+                    </div>
+                    <button class="invest-btn" onclick="buyPlan(${p.inv})">Invest Now</button>
+                </div>
+            `).join('');
+        };
+        renderPlans();
+
+        // Auth & Real-time Balance
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                document.getElementById('userEmail').innerText = user.email.split('@')[0];
-                onSnapshot(doc(db, "users", user.uid), (ds) => {
-                    if (ds.exists()) document.getElementById('balance').innerText = ds.data().balance.toLocaleString();
+                onSnapshot(doc(db, "users", user.uid), (snap) => {
+                    if (snap.exists()) {
+                        document.getElementById('userBalance').innerText = snap.data().balance.toLocaleString();
+                    }
                 });
-            } else { window.location.href = "login.html"; }
+            } else {
+                window.location.href = "login.html";
+            }
         });
 
-        window.activatePlan = async (name, price) => {
-            const user = auth.currentUser;
-            const userRef = doc(db, "users", user.uid);
-            const ds = await getDoc(userRef);
-            if (ds.data().balance >= price) {
-                await updateDoc(userRef, { balance: ds.data().balance - price, activePlan: name });
-                document.getElementById('planNameTitle').innerText = name + " Activated!";
-                document.getElementById('successOverlay').style.display = 'block';
-                document.getElementById('modalOverlay').style.display = 'block';
-            } else { alert("Balance kam hai! Pehle deposit karein."); }
+        // Modal Controls
+        window.showModal = (id) => {
+            document.getElementById(id).style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        };
+        window.closeAllModals = () => {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            document.getElementById('overlay').style.display = 'none';
         };
 
-        window.openDeposit = () => { document.getElementById('depositModal').style.display = 'block'; document.getElementById('modalOverlay').style.display = 'block'; };
-        window.closeDeposit = () => { document.getElementById('depositModal').style.display = 'none'; document.getElementById('successOverlay').style.display = 'none'; document.getElementById('modalOverlay').style.display = 'none'; };
-
+        // Actions
         window.submitDeposit = async () => {
             const amount = document.getElementById('depAmount').value;
             const tid = document.getElementById('depTID').value;
-            if(!amount || !tid) return alert("Details poori likhein!");
-            await addDoc(collection(db, "deposits"), { uid: auth.currentUser.uid, amount, tid, status: "pending", timestamp: serverTimestamp() });
-            alert("Request sent! Admin verify karega.");
-            closeDeposit();
-        }; 
+            if (!amount || !tid) return alert("Please fill all details!");
+            
+            await addDoc(collection(db, "deposits"), {
+                uid: auth.currentUser.uid,
+                email: auth.currentUser.email,
+                amount: amount,
+                tid: tid,
+                status: "pending",
+                timestamp: serverTimestamp()
+            });
+            alert("Deposit request submitted! Admin will verify soon.");
+            closeAllModals();
+        };
+
+        window.submitWithdraw = async () => {
+            const amount = document.getElementById('withAmount').value;
+            const name = document.getElementById('withName').value;
+            const num = document.getElementById('withNumber').value;
+            const method = document.getElementById('withMethod').value;
+            
+            if (!amount || !num) return alert("Complete the form!");
+            
+            await addDoc(collection(db, "withdrawals"), {
+                uid: auth.currentUser.uid,
+                amount, name, num, method,
+                status: "pending",
+                timestamp: serverTimestamp()
+            });
+            alert("Withdrawal request sent!");
+            closeAllModals();
+        };
+
+        window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
     </script>
 </body>
 </html>
