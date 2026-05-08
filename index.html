@@ -9,44 +9,54 @@
         :root { --primary-gold: #ffcc00; --dark-bg: #0f172a; --card-bg: #1e293b; --text-gray: #94a3b8; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--dark-bg); color: white; margin: 0; padding: 15px; padding-bottom: 90px; }
         
-        /* Header & Balance */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo { font-size: 22px; font-weight: bold; color: white; }
-        .profile-icon { font-size: 28px; color: var(--primary-gold); cursor: pointer; }
+        /* Stats & Balance */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-box { padding: 15px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
         .balance-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 25px; border-radius: 20px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); }
         .balance-amount { font-size: 36px; font-weight: 800; color: var(--primary-gold); margin: 10px 0; }
 
-        /* Action Grid */
+        /* Action Buttons */
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .action-card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
+        .action-card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; cursor: pointer; }
         .action-card i { font-size: 24px; color: var(--primary-gold); margin-bottom: 8px; }
 
-        /* Plans Section */
+        /* Plans */
         .section-title { font-size: 18px; font-weight: bold; margin: 20px 0 15px; border-left: 4px solid var(--primary-gold); padding-left: 10px; }
         .plan-card { background: var(--card-bg); padding: 18px; border-radius: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .invest-btn { background: #00d2ff; color: #0f172a; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
         /* Modals */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e293b; padding: 25px; border-radius: 20px; width: 85%; max-width: 400px; z-index: 1000; border: 1px solid var(--primary-gold); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e293b; padding: 25px; border-radius: 20px; width: 85%; max-width: 400px; z-index: 1000; border: 1px solid var(--primary-gold); }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; }
         input, select { width: 100%; padding: 12px; margin: 10px 0; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 10px; box-sizing: border-box; }
         
         /* Navbar */
         .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #334155; z-index: 100; }
-        .nav-item { text-align: center; color: var(--text-gray); font-size: 12px; text-decoration: none; cursor: pointer; }
+        .nav-item { text-align: center; color: var(--text-gray); font-size: 12px; text-decoration: none; }
         .nav-item.active { color: var(--primary-gold); }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">DailyProfit</div>
-        <i class="fas fa-user-circle profile-icon" onclick="showModal('logoutModal')"></i>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <div style="font-size:22px; font-weight:bold;">DailyProfit</div>
+        <i class="fas fa-user-circle" style="font-size:24px; color:var(--primary-gold);" onclick="showModal('logoutModal')"></i>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-box" style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e;">
+            <div style="font-size:11px; color:var(--text-gray);">Aaj ka Profit</div>
+            <div style="color:#22c55e; font-weight:bold;">Rs. <span id="todayProfit">0.00</span></div>
+        </div>
+        <div class="stat-box" style="background: rgba(255, 204, 0, 0.1); border-color: var(--primary-gold);">
+            <div style="font-size:11px; color:var(--text-gray);">Kul Profit</div>
+            <div style="color:var(--primary-gold); font-weight:bold;">Rs. <span id="totalProfit">0.00</span></div>
+        </div>
     </div>
 
     <div class="balance-card">
-        <div style="color: var(--text-gray); font-size: 13px;">TOTAL BALANCE</div>
+        <div style="color:var(--text-gray); font-size:13px;">TOTAL BALANCE</div>
         <div class="balance-amount">Rs. <span id="userBalance">0.00</span></div>
     </div>
 
@@ -65,45 +75,43 @@
     <div id="overlay" class="overlay" onclick="closeAllModals()"></div>
 
     <div id="depositModal" class="modal">
-        <h3 style="color: var(--primary-gold); margin-top:0;">Deposit Funds</h3>
-        <div style="background: #0f172a; padding: 15px; border-radius: 10px; font-size: 14px; margin-bottom: 10px; border-left: 3px solid var(--primary-gold);">
+        <h3 style="color:var(--primary-gold); margin-top:0;">Deposit Money</h3>
+        <div style="background:#0f172a; padding:10px; border-radius:10px; font-size:13px; margin-bottom:10px;">
             <b>EasyPaisa:</b> 03404146445<br>
             <b>Name:</b> Muhammad Touseef Ahmad
         </div>
         <input type="number" id="depAmount" placeholder="Enter Amount (Min 500)">
         <input type="text" id="depTID" placeholder="Transaction ID (TID)">
-        <button class="invest-btn" style="width:100%" onclick="alert('Request Sent Successfully!')">Submit Deposit</button>
+        <button class="invest-btn" style="width:100%" onclick="alert('Request sent!')">Submit</button>
     </div>
 
     <div id="withdrawModal" class="modal">
-        <h3 style="color: var(--primary-gold); margin-top:0;">Withdraw Money</h3>
-        <input type="text" id="withName" placeholder="Account Holder Name">
-        <select id="withMethod">
-            <option value="EasyPaisa">EasyPaisa</option>
-            <option value="JazzCash">JazzCash</option>
+        <h3 style="color:var(--primary-gold); margin-top:0;">Withdrawal</h3>
+        <input type="text" placeholder="Account Holder Name">
+        <select>
+            <option>EasyPaisa</option>
+            <option>JazzCash</option>
         </select>
-        <input type="text" id="withNumber" placeholder="Phone Number">
-        <input type="number" id="withAmount" placeholder="Amount (Min 500)">
-        <button class="invest-btn" style="width:100%" onclick="alert('Withdrawal request submitted.')">Request Now</button>
+        <input type="text" placeholder="Phone Number">
+        <input type="number" placeholder="Amount">
+        <button class="invest-btn" style="width:100%" onclick="alert('Withdraw request submitted')">Withdraw Now</button>
     </div>
 
-    <div id="confirmInvestModal" class="modal">
-        <h3 style="color: var(--primary-gold);">Confirm Plan?</h3>
-        <p id="planDetailsText" style="font-size: 14px; color: var(--text-gray);"></p>
-        <button class="invest-btn" style="width:100%; margin-bottom: 10px;" onclick="alert('Plan Activated Successfully!')">Activate Now</button>
-        <button class="invest-btn" style="width:100%; background: #444; color: white;" onclick="closeAllModals()">Cancel</button>
+    <div id="confirmPlanModal" class="modal">
+        <h3 style="color:var(--primary-gold);">Confirm Plan?</h3>
+        <p id="planMsg" style="font-size:14px;"></p>
+        <button class="invest-btn" style="width:100%; margin-bottom:10px;" onclick="alert('Plan activated!')">Active Now</button>
+        <button class="invest-btn" style="width:100%; background:#444;" onclick="closeAllModals()">Cancel</button>
     </div>
 
     <div id="logoutModal" class="modal">
-        <h3 style="color: var(--primary-gold);">Logout?</h3>
-        <p>Kya aap account logout karna chahte hain?</p>
-        <button class="invest-btn" style="width:100%; margin-bottom: 10px; background: red; color: white;" onclick="logOutUser()">Yes, Logout</button>
-        <button class="invest-btn" style="width:100%; background: #444; color: white;" onclick="closeAllModals()">Cancel</button>
+        <h3>Logout?</h3>
+        <button class="invest-btn" style="width:100%; background:red;" onclick="logOutUser()">Yes, Logout</button>
     </div>
 
     <nav class="navbar">
         <a href="#" class="nav-item active"><i class="fas fa-home"></i>Home</a>
-        <div class="nav-item" onclick="alert('History coming soon!')"><i class="fas fa-history"></i>History</div>
+        <div class="nav-item" onclick="alert('Coming soon')"><i class="fas fa-history"></i>History</div>
         <a href="https://wa.me/923297179402" target="_blank" class="nav-item" style="text-decoration:none;"><i class="fab fa-whatsapp"></i>Support</a>
     </nav>
 
@@ -125,53 +133,43 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // Plans Data
-        const plans = [
-            { inv: 500, daily: 120 }, { inv: 1000, daily: 240 }, { inv: 2000, daily: 500 },
-            { inv: 5000, daily: 1300 }, { inv: 10000, daily: 2800 }, { inv: 25000, daily: 7500 }
-        ];
+        // --- AUTH & AUTO-LOGOUT FIX ---
+        setPersistence(auth, browserLocalPersistence).then(() => {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    onSnapshot(doc(db, "users", user.uid), (snap) => {
+                        if (snap.exists()) {
+                            const d = snap.data();
+                            document.getElementById('userBalance').innerText = d.balance || "0.00";
+                            document.getElementById('todayProfit').innerText = d.todayProfit || "0.00";
+                            document.getElementById('totalProfit').innerText = d.totalProfit || "0.00";
+                        }
+                    });
+                } else {
+                    setTimeout(() => { if (!auth.currentUser) window.location.replace("login.html"); }, 5000);
+                }
+            });
+        });
 
-        const list = document.getElementById('plansList');
-        list.innerHTML = plans.map(p => `
+        // Plans logic
+        const plans = [
+            { inv: 500, daily: 120 }, { inv: 1000, daily: 240 }, { inv: 2000, daily: 480 },
+            { inv: 5000, daily: 1200 }, { inv: 10000, daily: 2500 }, { inv: 20000, daily: 5200 }
+        ];
+        document.getElementById('plansList').innerHTML = plans.map(p => `
             <div class="plan-card">
                 <div>
                     <h3 style="margin:0; font-size:16px; color:#00d2ff;">AI Plan ${p.inv}</h3>
                     <p style="margin:5px 0 0; font-size:12px; color:var(--text-gray);">Daily: Rs. ${p.daily} | 60 Days</p>
                 </div>
-                <button class="invest-btn" onclick="openInvestConfirm(${p.inv}, ${p.daily})">Invest Now</button>
+                <button class="invest-btn" onclick="confirmPlan(${p.inv})">Invest Now</button>
             </div>
         `).join('');
 
-        // Modal Controls
-        window.showModal = (id) => {
-            document.getElementById(id).style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        };
-        window.closeAllModals = () => {
-            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-            document.getElementById('overlay').style.display = 'none';
-        };
-        window.openInvestConfirm = (amount, profit) => {
-            document.getElementById('planDetailsText').innerText = `Investment: Rs. ${amount}\nDaily Profit: Rs. ${profit}\nDuration: 2 Months`;
-            showModal('confirmInvestModal');
-        };
-
-        // Auth & Persistence Fix
-        setPersistence(auth, browserLocalPersistence).then(() => {
-            return onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    onSnapshot(doc(db, "users", user.uid), (snap) => {
-                        if (snap.exists()) {
-                            document.getElementById('userBalance').innerText = snap.data().balance || "0.00";
-                        }
-                    });
-                } else {
-                    setTimeout(() => { if (!auth.currentUser) window.location.href = "login.html"; }, 2000);
-                }
-            });
-        });
-
-        window.logOutUser = () => signOut(auth).then(() => window.location.href = "login.html");
+        window.showModal = (id) => { document.getElementById(id).style.display='block'; document.getElementById('overlay').style.display='block'; };
+        window.closeAllModals = () => { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); document.getElementById('overlay').style.display='none'; };
+        window.confirmPlan = (amt) => { document.getElementById('planMsg').innerText = `Kya aap Rs. ${amt} wala plan active karna chahte hain?`; showModal('confirmPlanModal'); };
+        window.logOutUser = () => signOut(auth).then(()=> window.location.replace("login.html"));
     </script>
 </body>
 </html>
