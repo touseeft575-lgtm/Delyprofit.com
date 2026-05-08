@@ -10,9 +10,11 @@
         .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 50; }
         .modal.active { display: flex; }
+        /* Support Button Styling */
+        .support-btn { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; padding: 12px 20px; border-radius: 50px; display: flex; align-items: center; gap: 8px; font-weight: bold; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); z-index: 100; text-decoration: none; }
     </style>
 </head>
-<body class="p-4 font-sans">
+<body class="p-4 font-sans pb-24">
 
     <div class="text-center mb-8">
         <p class="text-cyan-400 font-bold tracking-widest text-sm mb-2">LIVE EARNINGS</p>
@@ -23,7 +25,7 @@
         <button onclick="openModal()" class="glass-card p-4 rounded-2xl flex flex-col items-center hover:bg-slate-700 transition">
             <span class="text-2xl mb-1">💳</span>
             <span class="text-xs font-medium">Deposit</span>
-        </button>03404146445
+        </button>
         <div class="glass-card p-4 rounded-2xl flex flex-col items-center border-purple-500/50 border-2">
             <span class="text-2xl mb-1">⚙️</span>
             <span class="text-xs font-medium">Invest</span>
@@ -31,8 +33,8 @@
         <div class="glass-card p-4 rounded-2xl flex flex-col items-center">
             <span class="text-2xl mb-1">💰</span>
             <span class="text-xs font-medium">Withdraw</span>
-        </div>300
-    </div>500000
+        </div>
+    </div>
 
     <div class="glass-card p-6 rounded-3xl relative overflow-hidden mb-6">
         <div class="flex justify-between items-start mb-6">
@@ -54,16 +56,21 @@
         </button>
     </div>
 
+    <a href="https://wa.me/923297179402 target="_blank" class="support-btn">
+        <span class="text-xl">💬</span>
+        <span>Support</span>
+    </a>
+
     <div id="depositModal" class="modal px-4">
         <div class="glass-card w-full max-w-sm p-6 rounded-3xl text-center">
             <div class="text-4xl mb-4 text-cyan-400">📲</div>
             <h3 class="text-xl font-bold mb-2">EasyPaisa Deposit</h3>
-            <p class="text-slate-400 text-sm mb-6">Niche diye gaye number par payment bheinjein aur screenshot support ko dein.</p>
+            <p class="text-slate-400 text-sm mb-6">Niche diye gaye number par payment bheinjein aur screenshot niche diye gaye support button par send karein.</p>
             
             <div class="bg-slate-900/50 p-4 rounded-2xl border border-dashed border-cyan-500/50 mb-6">
                 <p class="text-xs text-slate-500 mb-1">Account Number</p>
-                <p class="text-2xl font-mono font-bold text-cyan-400">03404146445</p>
-                <p class="text-xs text-slate-400 mt-2">Account Name: Muhammad Touseef</p>
+                <p class="text-2xl font-mono font-bold text-cyan-400">92440902</p>
+                <p class="text-xs text-slate-400 mt-2">Account Name: Smart Life Store</p>
             </div>
 
             <button onclick="closeModal()" class="w-full bg-slate-700 py-3 rounded-xl font-medium">Close</button>
