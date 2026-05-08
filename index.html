@@ -160,12 +160,15 @@
         window.logOutUser = () => {
             signOut(auth).then(() => { window.location.href = "login.html"; });
         };
+import { setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
-        // Auth Protection & Data Loading
-        onAuthStateChanged(auth, (user) => {
+// Session ko hamesha ke liye yaad rakhne ke liye persistence set karein
+setPersistence(auth, browserLocalPersistence)
+    .then(() => {
+        return onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log("User Logged In:", user.uid);
-                // Listen to User Data from Firestore
+                console.log("User session active:", user.uid);
+                // Real-time data update
                 onSnapshot(doc(db, "users", user.uid), (snap) => {
                     if (snap.exists()) {
                         const data = snap.data();
@@ -175,10 +178,14 @@
                     }
                 });
             } else {
-                // Agar user login nahi hai toh login page par bhej dein
+                // Agar user login nahi hai sirf tab login page par bhejein
                 window.location.href = "login.html";
             }
         });
-    </script>
+    })
+    .catch((error) => {
+        console.error("Auth Persistence Error:", error
+
+
 </body>
 </html>
