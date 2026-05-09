@@ -138,8 +138,8 @@
     </nav>
 
         <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
         import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -197,24 +197,42 @@ window.confirmPlan = (amt) => {
     document.getElementById('planMsg').innerText = `Kya aap Rs. ${amt} wala plan active karna chahte hain?`;
     showModal('confirmPlanModal');
 };
-
 window.activateNow = async () => {
     const user = auth.currentUser;
     if (!user) return;
 
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    const currentBalance = parseFloat(userDoc.data().balance || 0);
+    try {
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+        
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const currentBalance = parseFloat(userData.balance || 0);
 
-    if (currentBalance < selectedPlanAmount) {
-        alert("In-sufficient Balance! Please recharge your account first.");
-        closeAllModals();
-        showModal('depositModal'); 
-    } else {
-        alert("Plan activated successfully!");
-        closeAllModals();
-        // Mazeed logic (paisa katna) hum baad mein add karenge
+            if (currentBalance < selectedPlanAmount) {
+                alert("In-sufficient Balance! Please recharge your account first.");
+                closeAllModals();
+                showModal('depositModal');
+            } else {
+                // Balance minus karne ka logic
+                const newBalance = (currentBalance - selectedPlanAmount).toFixed(2);
+                
+                await updateDoc(userRef, {
+                    balance: newBalance
+                });
+
+                alert("Plan activated! Rs. " + selectedPlanAmount + " deducted from balance.");
+                closeAllModals();
+                location.reload(); // Page refresh taake naya balance dikhe
+            }
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("System error! Please try again.");
     }
 };
+
+
 
         window.logOutUser = () => signOut(auth).then(()=> window.location.replace("login.html"));
 // User ke Active Plans load karne ka function
