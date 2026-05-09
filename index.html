@@ -132,163 +132,106 @@
 
     <a href="https://wa.me/923297179402" target="_blank" class="nav-item" style="text-decoration:none;"><i class="fab fa-whatsapp"></i>Support</a>
 </nav>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
+    const firebaseConfig = {
+        apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMicnvYW-D-67g",
+        authDomain: "dailyprofit-b9600.firebaseapp.com",
+        projectId: "dailyprofit-b9600",
+        storageBucket: "dailyprofit-b9600.appspot.com",
+        messagingSenderId: "879891413676",
+        appId: "1:879891413676:web:bfba99ee5b95c45b957d09"
+    };
 
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    </nav>
-
-        <script type="module">
-        import { getFirestore, doc, onSnapshot, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
-
-        import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMicnvYW-D-67g",
-            authDomain: "dailyprofit-b9600.firebaseapp.com",
-            projectId: "dailyprofit-b9600",
-            storageBucket: "dailyprofit-b9600.appspot.com",
-            messagingSenderId: "879891413676",
-            appId: "1:879891413676:web:bfba99ee5b95c45b957d09"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        // --- PERMANENT SESSION FIX (NO AUTO-LOGOUT) ---
-        setPersistence(auth, browserLocalPersistence).then(() => {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    console.log("Session Active:", user.uid);
-                    onSnapshot(doc(db, "users", user.uid), (snap) => {
-                        if (snap.exists()) {
-                            const d = snap.data();
-                            document.getElementById('userBalance').innerText = d.balance || "0.00";
-                            document.getElementById('todayProfit').innerText = d.todayProfit || "0.00";
-                            document.getElementById('totalProfit').innerText = d.totalProfit || "0.00";
-                        }
-                    });
-                } else {
-                    // Agar user login nahi hai, toh dashboard par hi rahe, logout na ho
-                    console.log("No active session found.");
-                }
-            });
+    setPersistence(auth, browserLocalPersistence).then(() => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                onSnapshot(doc(db, "users", user.uid), (snap) => {
+                    if (snap.exists()) {
+                        const d = snap.data();
+                        document.getElementById('userBalance').innerText = d.balance || "0.00";
+                        document.getElementById('todayProfit').innerText = d.todayProfit || "0.00";
+                        document.getElementById('totalProfit').innerText = d.totalProfit || "0.00";
+                    }
+                });
+                window.loadUserPlans(user);
+            } else {
+                console.log("No active session.");
+            }
         });
-     // Plans Data
-        const plans = [
-            { inv: 500, daily: 120 }, { inv: 1000, daily: 240 }, { inv: 2000, daily: 480 },
-            { inv: 5000, daily: 1200 }, { inv: 10000, daily: 2500 }, { inv: 20000, daily: 5200 }
-        ];
-        document.getElementById('plansList').innerHTML = plans.map(p => `
-            <div class="plan-card">
-                <div>
-                    <h3 style="margin:0; font-size:16px; color:#00d2ff;">AI Plan ${p.inv}</h3>
-                    <p style="margin:5px 0 0; font-size:12px; color:var(--text-gray);">Daily: Rs. ${p.daily} | 60 Days</p>
-                </div>
-                <button class="invest-btn" onclick="confirmPlan(${p.inv})">Invest Now</button>
+    });
+
+    const plans = [
+        { inv: 500, daily: 120 }, { inv: 1000, daily: 240 }, { inv: 2000, daily: 480 },
+        { inv: 5000, daily: 1200 }, { inv: 10000, daily: 2500 }, { inv: 20000, daily: 5200 }
+    ];
+
+    document.getElementById('plansList').innerHTML = plans.map(p => `
+        <div class="plan-card">
+            <div>
+                <h3 style="margin:0; font-size:16px; color:#00d2ff;">AI Plan Rs.${p.inv}</h3>
+                <p style="margin:5px 0 0; font-size:12px; color:var(--text-gray);">Daily: Rs. ${p.daily} | 60 Days</p>
             </div>
-        `).join('');
-window.showModal = (id) => { document.getElementById(id).style.display='block'; document.getElementById('overlay').style.display='block'; };
-        window.closeAllModals = () => { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); document.getElementById('overlay').style.display='none'; };
-        let selectedPlanAmount = 0;
+            <button class="invest-btn" onclick="confirmPlan(${p.inv})">Invest Now</button>
+        </div>
+    `).join('');
 
-window.confirmPlan = (amt) => {
-    selectedPlanAmount = amt;
-    document.getElementById('planMsg').innerText = `Kya aap Rs. ${amt} wala plan active karna chahte hain?`;
-    showModal('confirmPlanModal');
-};
-window.activateNow = async () => {
-    const user = auth.currentUser;
-    if (!user) return;
+    window.showModal = (id) => { document.getElementById(id).style.display = 'block'; document.getElementById('overlay').style.display = 'block'; };
+    window.closeAllModals = () => { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); document.getElementById('overlay').style.display = 'none'; };
 
-    try {
-        const userRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userRef);
-        
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
-            const currentBalance = parseFloat(userData.balance || 0);
+    let selectedPlanAmount = 0;
+    window.confirmPlan = (amt) => {
+        selectedPlanAmount = amt;
+        document.getElementById('planMsg').innerText = `Kya aap Rs. ${amt} wala plan active karna chahte hain?`;
+        showModal('confirmPlanModal');
+    };
+
+    window.activateNow = async () => {
+        const user = auth.currentUser;
+        if (!user) return;
+        try {
+            const userRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userRef);
+            const currentBalance = parseFloat(userDoc.data().balance || 0);
 
             if (currentBalance < selectedPlanAmount) {
-                alert("In-sufficient Balance! Please recharge your account first.");
+                alert("In-sufficient Balance!");
                 closeAllModals();
                 showModal('depositModal');
             } else {
-                // Balance minus karne ka logic
                 const newBalance = (currentBalance - selectedPlanAmount).toFixed(2);
-                
-                await updateDoc(userRef, {
-                    balance: newBalance
-                });
-
-                alert("Plan activated! Rs. " + selectedPlanAmount + " deducted from balance.");
-                closeAllModals();
-                location.reload(); // Page refresh taake naya balance dikhe
+                await updateDoc(userRef, { balance: newBalance });
+                alert("Plan Activated!");
+                location.reload();
             }
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("System error! Please try again.");
-    }
-};
+        } catch (e) { alert("Error!"); }
+    };
 
+    window.logOutUser = () => signOut(auth).then(() => window.location.replace("login.html"));
 
-
-        window.logOutUser = () => signOut(auth).then(()=> window.location.replace("login.html"));
-// User ke Active Plans load karne ka function
-window.loadUserPlans = (user) => {
-    onSnapshot(doc(db, "users", user.uid), (snap) => {
-        if (snap.exists() && snap.data().activePlans) {
-            const plans = snap.data().activePlans;
+    window.loadUserPlans = (user) => {
+        onSnapshot(doc(db, "users", user.uid), (snap) => {
             const container = document.getElementById('activePlansContent');
-            if(plans.length > 0) {
-                container.innerHTML = plans.map(p => `
-                    <div style="background:#0f172a; padding:10px; border-radius:10px; margin-bottom:10px; border-left:3px solid #00d2ff; text-align:left;">
-                        <div style="font-weight:bold; color:#00d2ff;">AI Plan ${p.amount}</div>
-                        <div style="font-size:12px; color:var(--text-gray);">Daily Profit: Rs. ${p.dailyProfit}</div>
-                    </div>
-                `).join('');
-            } else {
-                container.innerHTML = '<p style="text-align:center; color:var(--text-gray);">Filhal koi active plan nahi hai.</p>';
-            }
-        }
-    });
-};
+            if (snap.exists() && snap.data().activePlans) {
+                container.innerHTML = snap.data().activePlans.map(p => `<div style="background:#0f172a; padding:10px; border-radius:10px; margin-bottom:10px; border-left:3px solid #00d2ff;">AI Plan ${p.amount}</div>`).join('');
+            } else { container.innerHTML = '<p>No active plans.</p>'; }
+        });
+    };
 
-// User ki Deposit/Withdraw History load karne ka function
-window.loadUserHistory = () => {
-    const user = auth.currentUser;
-    if (!user) return;
-    onSnapshot(doc(db, "users", user.uid), (snap) => {
-        const container = document.getElementById('historyContent');
-        if (snap.exists() && snap.data().transactions) {
-            const txs = snap.data().transactions;
-            if(txs.length > 0) {
-                container.innerHTML = txs.map(t => `
-                    <div style="background:#0f172a; padding:10px; border-radius:8px; margin-bottom:8px; border-left:4px solid ${t.type === 'Deposit' ? '#4caf50' : '#f44336'}; text-align:left;">
-                        <div style="display:flex; justify-content:space-between;">
-                            <span style="font-weight:bold; color:${t.type === 'Deposit' ? '#4caf50' : '#f44336'};">${t.type}</span>
-                            <span style="color:white;">Rs. ${t.amount}</span>
-                        </div>
-                        <div style="font-size:10px; color:var(--text-gray); margin-top:4px;">
-                            Status: <span style="color:var(--primary-gold);">${t.status}</span> | ${t.date || ''}
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                container.innerHTML = '<p style="text-align:center; color:var(--text-gray);">No history found.</p>';
-            }
-        } else {
-            container.innerHTML = '<p style="text-align:center; color:var(--text-gray);">No transactions yet.</p>';
-        }
-    });
-};
-
-        </script>
-</body>
-</html>
-
-        
-        
-
-        
+    window.loadUserHistory = () => {
+        const user = auth.currentUser;
+        onSnapshot(doc(db, "users", user.uid), (snap) => {
+            const container = document.getElementById('historyContent');
+            if (snap.exists() && snap.data().transactions) {
+                container.innerHTML = snap.data().transactions.map(t => `<div style="padding:10px; border-bottom:1px solid #222;">${t.type}: Rs.${t.amount} (${t.status})</div>`).join('');
+            } else { container.innerHTML = '<p>No history.</p>'; }
+        });
+    };
+</script>
