@@ -114,7 +114,7 @@
         <div id="activePlansContent" style="max-height: 300px; overflow-y: auto;">
             <p style="font-size:14px; text-align:center; color:var(--text-gray);">Filhal koi active plan nahi hai.</p>
         </div>
-        <button class="invest-btn" style="width:100%; margin-top:10px; background:#444;" onclick="closeAllModals()">Close</button>
+<button class="invest-btn" style="width:100%; margin-top:10px; background:#444;" onclick="closeAllModals()">Close</button>
     </div>
     <div id="historyModal" class="modal">
         <h3 style="color:var(--primary-gold); margin-top:0;">Payment History</h3>
@@ -173,8 +173,7 @@
                 }
             });
         });
-
-        // Plans Data
+     // Plans Data
         const plans = [
             { inv: 500, daily: 120 }, { inv: 1000, daily: 240 }, { inv: 2000, daily: 480 },
             { inv: 5000, daily: 1200 }, { inv: 10000, daily: 2500 }, { inv: 20000, daily: 5200 }
@@ -188,8 +187,7 @@
                 <button class="invest-btn" onclick="confirmPlan(${p.inv})">Invest Now</button>
             </div>
         `).join('');
-
-        window.showModal = (id) => { document.getElementById(id).style.display='block'; document.getElementById('overlay').style.display='block'; };
+window.showModal = (id) => { document.getElementById(id).style.display='block'; document.getElementById('overlay').style.display='block'; };
         window.closeAllModals = () => { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); document.getElementById('overlay').style.display='none'; };
         window.confirmPlan = (amt) => { document.getElementById('planMsg').innerText = `Kya aap Rs. ${amt} wala plan active karna chahte hain?`; showModal('confirmPlanModal'); };
         window.logOutUser = () => signOut(auth).then(()=> window.location.replace("login.html"));
@@ -247,4 +245,6 @@ window.loadUserHistory = () => {
 </html>
 
         
+        
+
         
