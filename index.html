@@ -153,11 +153,12 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // --- SESSION CONTROL ---
+    // --- FIX LOGOUT ISSUE ---
     setPersistence(auth, browserLocalPersistence).then(() => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Real-time Balance Update
+                console.log("User logged in:", user.uid);
+                // Real-time data sync
                 onSnapshot(doc(db, "users", user.uid), (snap) => {
                     if (snap.exists()) {
                         const d = snap.data();
@@ -168,12 +169,15 @@
                 });
                 window.loadPaymentHistory(user.uid);
             } else {
-                window.location.replace("login.html");
+                // Sirf tab logout karega agar waqai session khatam ho
+                if(!window.location.href.includes("login.html") && !window.location.href.includes("signup.html")) {
+                    window.location.replace("login.html");
+                }
             }
         });
-    });
+    }).catch((error) => console.error("Persistence error:", error));
 
-    // --- MODAL UTILITIES ---
+    // --- GLOBALS ---
     window.showModal = (id) => { 
         document.getElementById(id).style.display = 'block'; 
         document.getElementById('overlay').style.display = 'block'; 
@@ -183,13 +187,12 @@
         document.getElementById('overlay').style.display = 'none'; 
     };
 
-    // --- 1. DEPOSIT LOGIC (Fixing Problem 2) ---
+    // --- 1. DEPOSIT (PROBLEM 2 FIXED) ---
     window.submitDeposit = async () => {
         const user = auth.currentUser;
         const amount = document.getElementById('depAmount').value;
         const tid = document.getElementById('depTID').value;
-
-        if (!amount || !tid) { alert("Sari details bharein!"); return; }
+        if (!amount || !tid) { alert("Please enter Amount and TID!"); return; }
 
         try {
             await addDoc(collection(db, "transactions"), {
@@ -197,15 +200,15 @@
                 type: "Deposit",
                 amount: amount,
                 tid: tid,
-                status: "Pending", // Admin isko 'Accepted' karega
+                status: "Pending",
                 timestamp: new Date()
             });
-            alert("Deposit request sent! Admin verify karke balance add karega.");
+            alert("Request sent to Admin!");
             closeAllModals();
-        } catch (e) { alert("Error: Network issue. Try again."); }
+        } catch (e) { alert("Submission failed! Try again."); }
     };
 
-    // --- 2. PLAN ACTIVATION (Fixing Problem 1) ---
+    // --- 2. PLAN ACTIVE (PROBLEM 1 FIXED) ---
     let selectedPlanAmount = 0;
     window.confirmPlan = (amt) => {
         selectedPlanAmount = amt;
@@ -215,6 +218,7 @@
 
     window.activateNow = async () => {
         const user = auth.currentUser;
+        if(!user) return;
         try {
             const userRef = doc(db, "users", user.uid);
             const userSnap = await getDoc(userRef);
@@ -227,25 +231,25 @@
             } else {
                 const newBalance = (balance - selectedPlanAmount).toFixed(2);
                 await updateDoc(userRef, { balance: newBalance });
-                
-                await addDoc(collection(db, "active_plans"), {
+                await addDoc(collection(db, "transactions"), {
                     userId: user.uid,
-                    planAmount: selectedPlanAmount,
-                    date: new Date()
+                    type: "Plan Activation",
+                    amount: selectedPlanAmount,
+                    status: "Accepted",
+                    timestamp: new Date()
                 });
-                alert("Mubarak ho! Plan active ho gaya hai.");
+                alert("Plan successfully activated!");
                 location.reload();
             }
-        } catch (e) { alert("Activation failed. Try again."); }
+        } catch (e) { alert("Error activating plan."); }
     };
 
-    // --- 3. WITHDRAWAL LOGIC ---
+    // --- 3. WITHDRAWAL ---
     window.submitWithdraw = async () => {
         const user = auth.currentUser;
         const amount = document.getElementById('withdrawAmount').value;
         const phone = document.getElementById('withdrawPhone').value;
-
-        if (!amount || !phone) { alert("Details mukammal karein!"); return; }
+        if (!amount || !phone) { alert("Details enter karein!"); return; }
 
         try {
             await addDoc(collection(db, "transactions"), {
@@ -256,33 +260,28 @@
                 status: "Pending",
                 timestamp: new Date()
             });
-            alert("Withdraw request Admin ko bhej di gayi hai.");
+            alert("Withdrawal request sent!");
             closeAllModals();
-        } catch (e) { alert("Error sending request."); }
+        } catch (e) { alert("Error!"); }
     };
 
-    // --- 4. PAYMENT HISTORY (Fixing Problem 3) ---
+    // --- 4. HISTORY (PROBLEM 3 FIXED) ---
     window.loadPaymentHistory = (uid) => {
-        const historyRef = collection(db, "transactions");
-        const q = query(historyRef, where("userId", "==", uid), orderBy("timestamp", "desc"));
-
-        onSnapshot(q, (querySnapshot) => {
-            const container = document.getElementById('historyContent'); // Make sure this ID exists in HTML
-            if (querySnapshot.empty) {
-                container.innerHTML = "<p>No history found.</p>";
-                return;
-            }
+        const q = query(collection(db, "transactions"), where("userId", "==", uid), orderBy("timestamp", "desc"));
+        onSnapshot(q, (snap) => {
+            const container = document.getElementById('historyContent');
+            if (snap.empty) { container.innerHTML = "<p>No records.</p>"; return; }
             let html = "";
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const color = data.status === "Accepted" ? "#4caf50" : "#ff9800";
+            snap.forEach((doc) => {
+                const d = doc.data();
+                const statusColor = d.status === "Accepted" ? "#00ff00" : "#ffcc00";
                 html += `
-                    <div style="background:#1e293b; padding:10px; margin-bottom:10px; border-radius:8px; border-left:4px solid ${color}">
+                    <div style="border-bottom:1px solid #333; padding:10px 0;">
                         <div style="display:flex; justify-content:space-between;">
-                            <span><b>${data.type}</b></span>
-                            <span style="color:${color}">${data.status}</span>
+                            <span><b>${d.type}</b></span>
+                            <span style="color:${statusColor}">${d.status}</span>
                         </div>
-                        <div style="font-size:12px; margin-top:5px;">Amount: Rs. ${data.amount}</div>
+                        <small>Rs. ${d.amount} | ${d.timestamp.toDate().toLocaleDateString()}</small>
                     </div>`;
             });
             container.innerHTML = html;
@@ -291,3 +290,4 @@
 
     window.logOutUser = () => signOut(auth).then(() => window.location.replace("login.html"));
 </script>
+
