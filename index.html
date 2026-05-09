@@ -150,7 +150,7 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // --- SESSION FIX ---
+    // --- USER SESSION & DASHBOARD ---
     setPersistence(auth, browserLocalPersistence).then(() => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -167,7 +167,7 @@
         });
     });
 
-    // --- PLANS DISPLAY ---
+    // --- INVESTMENT PLANS ---
     const plans = [
         { inv: 500, daily: 120 }, { inv: 1000, daily: 240 }, { inv: 2000, daily: 480 },
         { inv: 5000, daily: 1200 }, { inv: 10000, daily: 2500 }, { inv: 20000, daily: 5200 }
@@ -193,7 +193,28 @@
         document.getElementById('overlay').style.display = 'none'; 
     };
 
-    // --- PLAN ACTIVATION ---
+    // --- 1. DEPOSIT LOGIC ---
+    window.submitDeposit = async () => {
+        const user = auth.currentUser;
+        const amount = document.getElementById('depAmount').value;
+        const tid = document.getElementById('depTID').value;
+        if (!amount || !tid) { alert("Please enter Amount and TID!"); return; }
+
+        try {
+            await addDoc(collection(db, "deposits"), {
+                userId: user.uid,
+                email: user.email || "No Email",
+                amount: amount,
+                tid: tid,
+                status: "pending",
+                timestamp: new Date()
+            });
+            alert("Deposit request submitted to Admin!");
+            closeAllModals();
+        } catch (e) { alert("Submission failed! Check internet."); }
+    };
+
+    // --- 2. PLAN ACTIVATION ---
     let selectedPlanAmount = 0;
     window.confirmPlan = (amt) => {
         selectedPlanAmount = amt;
@@ -210,40 +231,49 @@
             const currentBalance = parseFloat(userDoc.data().balance || 0);
 
             if (currentBalance < selectedPlanAmount) {
-                alert("In-sufficient Balance!");
+                alert("In-sufficient Balance! Pehle recharge karein.");
                 closeAllModals();
                 showModal('depositModal');
             } else {
                 const newBalance = (currentBalance - selectedPlanAmount).toFixed(2);
                 await updateDoc(userRef, { balance: newBalance });
-                alert("Plan Activated Successfully!");
+                
+                await addDoc(collection(db, "active_requests"), {
+                    userId: user.uid,
+                    plan: selectedPlanAmount,
+                    status: "active",
+                    timestamp: new Date()
+                });
+
+                alert("Success! Plan activated and amount deducted.");
                 location.reload();
             }
-        } catch (e) { alert("Error activating plan!"); }
+        } catch (e) { alert("Error! Please try again."); }
     };
 
-    // --- DEPOSIT SUBMIT ---
-    window.submitDeposit = async () => {
+    // --- 3. WITHDRAW LOGIC ---
+    window.submitWithdraw = async () => {
         const user = auth.currentUser;
-        const amount = document.getElementById('depAmount').value;
-        const tid = document.getElementById('depTID').value;
+        const name = document.getElementById('withdrawName').value;
+        const method = document.getElementById('withdrawMethod').value;
+        const phone = document.getElementById('withdrawPhone').value;
+        const amount = document.getElementById('withdrawAmount').value;
 
-        if (!amount || !tid) {
-            alert("Please enter both Amount and TID!");
-            return;
-        }
+        if (!name || !phone || !amount) { alert("Sari details bharein!"); return; }
 
         try {
-            await addDoc(collection(db, "deposits"), {
+            await addDoc(collection(db, "withdrawals"), {
                 userId: user.uid,
+                name: name,
+                method: method,
+                phone: phone,
                 amount: amount,
-                tid: tid,
                 status: "pending",
                 timestamp: new Date()
             });
-            alert("Deposit request submitted!");
+            alert("Withdraw request sent to Admin Panel!");
             closeAllModals();
-        } catch (e) { alert("Submission failed!"); }
+        } catch (e) { alert("Withdrawal failed!"); }
     };
 
     window.logOutUser = () => signOut(auth).then(() => window.location.replace("login.html"));
@@ -254,16 +284,6 @@
             if (snap.exists() && snap.data().activePlans) {
                 container.innerHTML = snap.data().activePlans.map(p => `<div style="background:#0f172a; padding:10px; border-radius:10px; margin-bottom:10px; border-left:3px solid #00d2ff;">AI Plan ${p.amount}</div>`).join('');
             } else { container.innerHTML = '<p>No active plans.</p>'; }
-        });
-    };
-
-    window.loadUserHistory = () => {
-        const user = auth.currentUser;
-        onSnapshot(doc(db, "users", user.uid), (snap) => {
-            const container = document.getElementById('historyContent');
-            if (snap.exists() && snap.data().transactions) {
-                container.innerHTML = snap.data().transactions.map(t => `<div style="padding:10px; border-bottom:1px solid #222;">${t.type}: Rs.${t.amount} (${t.status})</div>`).join('');
-            } else { container.innerHTML = '<p>No history found.</p>'; }
         });
     };
 </script>
