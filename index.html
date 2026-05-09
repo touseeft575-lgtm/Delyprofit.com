@@ -100,7 +100,8 @@
     <div id="confirmPlanModal" class="modal">
         <h3 style="color:var(--primary-gold);">Confirm Plan?</h3>
         <p id="planMsg" style="font-size:14px;"></p>
-        <button class="invest-btn" style="width:100%; margin-bottom:10px;" onclick="alert('Plan activated!')">Active Now</button>
+        <button class="invest-btn" style="width:100%; margin-bottom:10px;" onclick="activateNow()">Active Now</button>
+
         <button class="invest-btn" style="width:100%; background:#444;" onclick="closeAllModals()">Cancel</button>
     </div>
 
@@ -189,7 +190,32 @@
         `).join('');
 window.showModal = (id) => { document.getElementById(id).style.display='block'; document.getElementById('overlay').style.display='block'; };
         window.closeAllModals = () => { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); document.getElementById('overlay').style.display='none'; };
-        window.confirmPlan = (amt) => { document.getElementById('planMsg').innerText = `Kya aap Rs. ${amt} wala plan active karna chahte hain?`; showModal('confirmPlanModal'); };
+        let selectedPlanAmount = 0;
+
+window.confirmPlan = (amt) => {
+    selectedPlanAmount = amt;
+    document.getElementById('planMsg').innerText = `Kya aap Rs. ${amt} wala plan active karna chahte hain?`;
+    showModal('confirmPlanModal');
+};
+
+window.activateNow = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    const currentBalance = parseFloat(userDoc.data().balance || 0);
+
+    if (currentBalance < selectedPlanAmount) {
+        alert("In-sufficient Balance! Please recharge your account first.");
+        closeAllModals();
+        showModal('depositModal'); 
+    } else {
+        alert("Plan activated successfully!");
+        closeAllModals();
+        // Mazeed logic (paisa katna) hum baad mein add karenge
+    }
+};
+
         window.logOutUser = () => signOut(auth).then(()=> window.location.replace("login.html"));
 // User ke Active Plans load karne ka function
 window.loadUserPlans = (user) => {
