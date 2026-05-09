@@ -107,12 +107,25 @@
     <div id="logoutModal" class="modal">
         <h3>Logout?</h3>
         <button class="invest-btn" style="width:100%; background:red;" onclick="logOutUser()">Yes, Logout</button>
+
+    </div>
+    <div id="myPlansModal" class="modal">
+        <h3 style="color:var(--primary-gold); margin-top:0;">My Active Plans</h3>
+        <div id="activePlansContent" style="max-height: 300px; overflow-y: auto;">
+            <p style="font-size:14px; text-align:center; color:var(--text-gray);">Filhal koi active plan nahi hai.</p>
+        </div>
+        <button class="invest-btn" style="width:100%; margin-top:10px; background:#444;" onclick="closeAllModals()">Close</button>
     </div>
 
     <nav class="navbar">
-        <a href="#" class="nav-item active"><i class="fas fa-home"></i>Home</a>
-        <div class="nav-item" onclick="alert('Coming soon')"><i class="fas fa-history"></i>History</div>
-        <a href="https://wa.me/923297179402" target="_blank" class="nav-item" style="text-decoration:none;"><i class="fab fa-whatsapp"></i>Support</a>
+    <a href="#" class="nav-item active"><i class="fas fa-home"></i>Home</a>
+    <div class="nav-item" onclick="showModal('myPlansModal')"><i class="fas fa-list-alt"></i>My Plans</div>
+    <div class="nav-item" onclick="alert('History coming soon')"><i class="fas fa-history"></i>History</div>
+    <a href="https://wa.me/923297179402" target="_blank" class="nav-item" style="text-decoration:none;"><i class="fab fa-whatsapp"></i>Support</a>
+</nav>
+
+
+
     </nav>
 
         <script type="module">
