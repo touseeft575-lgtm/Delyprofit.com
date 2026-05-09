@@ -119,22 +119,25 @@
 <button class="invest-btn" style="width:100%; margin-top:10px; background:#444;" onclick="closeAllModals()">Close</button>
     </div>
     <div id="historyModal" class="modal">
-        <h3 style="color:var(--primary-gold); margin-top:0;">Payment History</h3>
-        <div id="historyContent" style="max-height: 300px; overflow-y: auto;">
-            <p style="font-size:13px; text-align:center; color:var(--text-gray);">Loading history...</p>
-        </div>
-        <button class="invest-btn" style="width:100%; margin-top:10px; background:#444;" onclick="closeAllModals()">Close</button>
+    <h3 style="color:var(--primary-gold); margin-top:0;">Payment History</h3>
+    <!-- Is div ki ID 'historyContent' honi chahiye taaki JavaScript yahan data dikha sake -->
+    <div id="historyContent" style="max-height: 300px; overflow-y: auto;">
+        <p style="font-size:13px; text-align:center; color:var(--text-gray);">Loading history...</p>
     </div>
+    <button class="invest-btn" style="width:100%; margin-top:10px; background:#444;" onclick="closeAllModals()">Close</button>
+</div>
 
+    
     <nav class="navbar">
     <a href="#" class="nav-item active"><i class="fas fa-home"></i>Home</a>
     <div class="nav-item" onclick="showModal('myPlansModal')"><i class="fas fa-list-alt"></i>My Plans</div>
     <div class="nav-item" onclick="showModal('historyModal'); loadUserHistory();"><i class="fas fa-history"></i>History</div>
 
     <a href="https://wa.me/923297179402" target="_blank" class="nav-item" style="text-decoration:none;"><i class="fab fa-whatsapp"></i>Support</a>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, getDoc, updateDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+    import { getFirestore, doc, onSnapshot, getDoc, updateDoc, addDoc, collection, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -150,10 +153,11 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // --- USER SESSION & DASHBOARD ---
+    // --- SESSION CONTROL ---
     setPersistence(auth, browserLocalPersistence).then(() => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                // Real-time Balance Update
                 onSnapshot(doc(db, "users", user.uid), (snap) => {
                     if (snap.exists()) {
                         const d = snap.data();
@@ -162,28 +166,14 @@
                         document.getElementById('totalProfit').innerText = d.totalProfit || "0.00";
                     }
                 });
-                window.loadUserPlans(user);
+                window.loadPaymentHistory(user.uid);
+            } else {
+                window.location.replace("login.html");
             }
         });
     });
 
-    // --- INVESTMENT PLANS ---
-    const plans = [
-        { inv: 500, daily: 120 }, { inv: 1000, daily: 240 }, { inv: 2000, daily: 480 },
-        { inv: 5000, daily: 1200 }, { inv: 10000, daily: 2500 }, { inv: 20000, daily: 5200 }
-    ];
-
-    document.getElementById('plansList').innerHTML = plans.map(p => `
-        <div class="plan-card">
-            <div>
-                <h3 style="margin:0; font-size:16px; color:#00d2ff;">AI Plan Rs.${p.inv}</h3>
-                <p style="margin:5px 0 0; font-size:12px; color:var(--text-gray);">Daily: Rs. ${p.daily} | 60 Days</p>
-            </div>
-            <button class="invest-btn" onclick="confirmPlan(${p.inv})">Invest Now</button>
-        </div>
-    `).join('');
-
-    // --- MODAL CONTROLS ---
+    // --- MODAL UTILITIES ---
     window.showModal = (id) => { 
         document.getElementById(id).style.display = 'block'; 
         document.getElementById('overlay').style.display = 'block'; 
@@ -193,28 +183,29 @@
         document.getElementById('overlay').style.display = 'none'; 
     };
 
-    // --- 1. DEPOSIT LOGIC ---
+    // --- 1. DEPOSIT LOGIC (Fixing Problem 2) ---
     window.submitDeposit = async () => {
         const user = auth.currentUser;
         const amount = document.getElementById('depAmount').value;
         const tid = document.getElementById('depTID').value;
-        if (!amount || !tid) { alert("Please enter Amount and TID!"); return; }
+
+        if (!amount || !tid) { alert("Sari details bharein!"); return; }
 
         try {
-            await addDoc(collection(db, "deposits"), {
+            await addDoc(collection(db, "transactions"), {
                 userId: user.uid,
-                email: user.email || "No Email",
+                type: "Deposit",
                 amount: amount,
                 tid: tid,
-                status: "pending",
+                status: "Pending", // Admin isko 'Accepted' karega
                 timestamp: new Date()
             });
-            alert("Deposit request submitted to Admin!");
+            alert("Deposit request sent! Admin verify karke balance add karega.");
             closeAllModals();
-        } catch (e) { alert("Submission failed! Check internet."); }
+        } catch (e) { alert("Error: Network issue. Try again."); }
     };
 
-    // --- 2. PLAN ACTIVATION ---
+    // --- 2. PLAN ACTIVATION (Fixing Problem 1) ---
     let selectedPlanAmount = 0;
     window.confirmPlan = (amt) => {
         selectedPlanAmount = amt;
@@ -224,66 +215,79 @@
 
     window.activateNow = async () => {
         const user = auth.currentUser;
-        if (!user) return;
         try {
             const userRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userRef);
-            const currentBalance = parseFloat(userDoc.data().balance || 0);
+            const userSnap = await getDoc(userRef);
+            const balance = parseFloat(userSnap.data().balance || 0);
 
-            if (currentBalance < selectedPlanAmount) {
-                alert("In-sufficient Balance! Pehle recharge karein.");
+            if (balance < selectedPlanAmount) {
+                alert("Aapka balance kam hai! Pehle recharge karein.");
                 closeAllModals();
                 showModal('depositModal');
             } else {
-                const newBalance = (currentBalance - selectedPlanAmount).toFixed(2);
+                const newBalance = (balance - selectedPlanAmount).toFixed(2);
                 await updateDoc(userRef, { balance: newBalance });
                 
-                await addDoc(collection(db, "active_requests"), {
+                await addDoc(collection(db, "active_plans"), {
                     userId: user.uid,
-                    plan: selectedPlanAmount,
-                    status: "active",
-                    timestamp: new Date()
+                    planAmount: selectedPlanAmount,
+                    date: new Date()
                 });
-
-                alert("Success! Plan activated and amount deducted.");
+                alert("Mubarak ho! Plan active ho gaya hai.");
                 location.reload();
             }
-        } catch (e) { alert("Error! Please try again."); }
+        } catch (e) { alert("Activation failed. Try again."); }
     };
 
-    // --- 3. WITHDRAW LOGIC ---
+    // --- 3. WITHDRAWAL LOGIC ---
     window.submitWithdraw = async () => {
         const user = auth.currentUser;
-        const name = document.getElementById('withdrawName').value;
-        const method = document.getElementById('withdrawMethod').value;
-        const phone = document.getElementById('withdrawPhone').value;
         const amount = document.getElementById('withdrawAmount').value;
+        const phone = document.getElementById('withdrawPhone').value;
 
-        if (!name || !phone || !amount) { alert("Sari details bharein!"); return; }
+        if (!amount || !phone) { alert("Details mukammal karein!"); return; }
 
         try {
-            await addDoc(collection(db, "withdrawals"), {
+            await addDoc(collection(db, "transactions"), {
                 userId: user.uid,
-                name: name,
-                method: method,
-                phone: phone,
+                type: "Withdraw",
                 amount: amount,
-                status: "pending",
+                phone: phone,
+                status: "Pending",
                 timestamp: new Date()
             });
-            alert("Withdraw request sent to Admin Panel!");
+            alert("Withdraw request Admin ko bhej di gayi hai.");
             closeAllModals();
-        } catch (e) { alert("Withdrawal failed!"); }
+        } catch (e) { alert("Error sending request."); }
+    };
+
+    // --- 4. PAYMENT HISTORY (Fixing Problem 3) ---
+    window.loadPaymentHistory = (uid) => {
+        const historyRef = collection(db, "transactions");
+        const q = query(historyRef, where("userId", "==", uid), orderBy("timestamp", "desc"));
+
+        onSnapshot(q, (querySnapshot) => {
+            const container = document.getElementById('historyContent'); // Make sure this ID exists in HTML
+            if (querySnapshot.empty) {
+                container.innerHTML = "<p>No history found.</p>";
+                return;
+            }
+            let html = "";
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const color = data.status === "Accepted" ? "#4caf50" : "#ff9800";
+                html += `
+                    <div style="background:#1e293b; padding:10px; margin-bottom:10px; border-radius:8px; border-left:4px solid ${color}">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span><b>${data.type}</b></span>
+                            <span style="color:${color}">${data.status}</span>
+                        </div>
+                        <div style="font-size:12px; margin-top:5px;">Amount: Rs. ${data.amount}</div>
+                    </div>`;
+            });
+            container.innerHTML = html;
+        });
     };
 
     window.logOutUser = () => signOut(auth).then(() => window.location.replace("login.html"));
-
-    window.loadUserPlans = (user) => {
-        onSnapshot(doc(db, "users", user.uid), (snap) => {
-            const container = document.getElementById('activePlansContent');
-            if (snap.exists() && snap.data().activePlans) {
-                container.innerHTML = snap.data().activePlans.map(p => `<div style="background:#0f172a; padding:10px; border-radius:10px; margin-bottom:10px; border-left:3px solid #00d2ff;">AI Plan ${p.amount}</div>`).join('');
-            } else { container.innerHTML = '<p>No active plans.</p>'; }
-        });
-    };
 </script>
