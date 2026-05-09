@@ -116,11 +116,19 @@
         </div>
         <button class="invest-btn" style="width:100%; margin-top:10px; background:#444;" onclick="closeAllModals()">Close</button>
     </div>
+    <div id="historyModal" class="modal">
+        <h3 style="color:var(--primary-gold); margin-top:0;">Payment History</h3>
+        <div id="historyContent" style="max-height: 300px; overflow-y: auto;">
+            <p style="font-size:13px; text-align:center; color:var(--text-gray);">Loading history...</p>
+        </div>
+        <button class="invest-btn" style="width:100%; margin-top:10px; background:#444;" onclick="closeAllModals()">Close</button>
+    </div>
 
     <nav class="navbar">
     <a href="#" class="nav-item active"><i class="fas fa-home"></i>Home</a>
     <div class="nav-item" onclick="showModal('myPlansModal')"><i class="fas fa-list-alt"></i>My Plans</div>
-    <div class="nav-item" onclick="alert('History coming soon')"><i class="fas fa-history"></i>History</div>
+    <div class="nav-item" onclick="showModal('historyModal'); loadUserHistory();"><i class="fas fa-history"></i>History</div>
+
     <a href="https://wa.me/923297179402" target="_blank" class="nav-item" style="text-decoration:none;"><i class="fab fa-whatsapp"></i>Support</a>
 </nav>
 
@@ -185,7 +193,56 @@
         window.closeAllModals = () => { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); document.getElementById('overlay').style.display='none'; };
         window.confirmPlan = (amt) => { document.getElementById('planMsg').innerText = `Kya aap Rs. ${amt} wala plan active karna chahte hain?`; showModal('confirmPlanModal'); };
         window.logOutUser = () => signOut(auth).then(()=> window.location.replace("login.html"));
-    </script>
+// User ke Active Plans load karne ka function
+window.loadUserPlans = (user) => {
+    onSnapshot(doc(db, "users", user.uid), (snap) => {
+        if (snap.exists() && snap.data().activePlans) {
+            const plans = snap.data().activePlans;
+            const container = document.getElementById('activePlansContent');
+            if(plans.length > 0) {
+                container.innerHTML = plans.map(p => `
+                    <div style="background:#0f172a; padding:10px; border-radius:10px; margin-bottom:10px; border-left:3px solid #00d2ff; text-align:left;">
+                        <div style="font-weight:bold; color:#00d2ff;">AI Plan ${p.amount}</div>
+                        <div style="font-size:12px; color:var(--text-gray);">Daily Profit: Rs. ${p.dailyProfit}</div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p style="text-align:center; color:var(--text-gray);">Filhal koi active plan nahi hai.</p>';
+            }
+        }
+    });
+};
+
+// User ki Deposit/Withdraw History load karne ka function
+window.loadUserHistory = () => {
+    const user = auth.currentUser;
+    if (!user) return;
+    onSnapshot(doc(db, "users", user.uid), (snap) => {
+        const container = document.getElementById('historyContent');
+        if (snap.exists() && snap.data().transactions) {
+            const txs = snap.data().transactions;
+            if(txs.length > 0) {
+                container.innerHTML = txs.map(t => `
+                    <div style="background:#0f172a; padding:10px; border-radius:8px; margin-bottom:8px; border-left:4px solid ${t.type === 'Deposit' ? '#4caf50' : '#f44336'}; text-align:left;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="font-weight:bold; color:${t.type === 'Deposit' ? '#4caf50' : '#f44336'};">${t.type}</span>
+                            <span style="color:white;">Rs. ${t.amount}</span>
+                        </div>
+                        <div style="font-size:10px; color:var(--text-gray); margin-top:4px;">
+                            Status: <span style="color:var(--primary-gold);">${t.status}</span> | ${t.date || ''}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p style="text-align:center; color:var(--text-gray);">No history found.</p>';
+            }
+        } else {
+            container.innerHTML = '<p style="text-align:center; color:var(--text-gray);">No transactions yet.</p>';
+        }
+    });
+};
+
+        </script>
 </body>
 </html>
 
