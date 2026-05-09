@@ -132,12 +132,10 @@
     <div class="nav-item" onclick="showModal('historyModal'); loadUserHistory();"><i class="fas fa-history"></i>History</div>
 
     <a href="https://wa.me/923297179402" target="_blank" class="nav-item" style="text-decoration:none;"><i class="fab fa-whatsapp"></i>Support</a>
-</nav>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
     import { getFirestore, doc, onSnapshot, getDoc, updateDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
-
+    import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMicnvYW-D-67g",
@@ -152,6 +150,7 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
+    // --- SESSION FIX ---
     setPersistence(auth, browserLocalPersistence).then(() => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -164,12 +163,11 @@
                     }
                 });
                 window.loadUserPlans(user);
-            } else {
-                console.log("No active session.");
             }
         });
     });
 
+    // --- PLANS DISPLAY ---
     const plans = [
         { inv: 500, daily: 120 }, { inv: 1000, daily: 240 }, { inv: 2000, daily: 480 },
         { inv: 5000, daily: 1200 }, { inv: 10000, daily: 2500 }, { inv: 20000, daily: 5200 }
@@ -185,9 +183,17 @@
         </div>
     `).join('');
 
-    window.showModal = (id) => { document.getElementById(id).style.display = 'block'; document.getElementById('overlay').style.display = 'block'; };
-    window.closeAllModals = () => { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); document.getElementById('overlay').style.display = 'none'; };
+    // --- MODAL CONTROLS ---
+    window.showModal = (id) => { 
+        document.getElementById(id).style.display = 'block'; 
+        document.getElementById('overlay').style.display = 'block'; 
+    };
+    window.closeAllModals = () => { 
+        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
+        document.getElementById('overlay').style.display = 'none'; 
+    };
 
+    // --- PLAN ACTIVATION ---
     let selectedPlanAmount = 0;
     window.confirmPlan = (amt) => {
         selectedPlanAmount = amt;
@@ -210,10 +216,34 @@
             } else {
                 const newBalance = (currentBalance - selectedPlanAmount).toFixed(2);
                 await updateDoc(userRef, { balance: newBalance });
-                alert("Plan Activated!");
+                alert("Plan Activated Successfully!");
                 location.reload();
             }
-        } catch (e) { alert("Error!"); }
+        } catch (e) { alert("Error activating plan!"); }
+    };
+
+    // --- DEPOSIT SUBMIT ---
+    window.submitDeposit = async () => {
+        const user = auth.currentUser;
+        const amount = document.getElementById('depAmount').value;
+        const tid = document.getElementById('depTID').value;
+
+        if (!amount || !tid) {
+            alert("Please enter both Amount and TID!");
+            return;
+        }
+
+        try {
+            await addDoc(collection(db, "deposits"), {
+                userId: user.uid,
+                amount: amount,
+                tid: tid,
+                status: "pending",
+                timestamp: new Date()
+            });
+            alert("Deposit request submitted!");
+            closeAllModals();
+        } catch (e) { alert("Submission failed!"); }
     };
 
     window.logOutUser = () => signOut(auth).then(() => window.location.replace("login.html"));
@@ -233,37 +263,7 @@
             const container = document.getElementById('historyContent');
             if (snap.exists() && snap.data().transactions) {
                 container.innerHTML = snap.data().transactions.map(t => `<div style="padding:10px; border-bottom:1px solid #222;">${t.type}: Rs.${t.amount} (${t.status})</div>`).join('');
-            } else { container.innerHTML = '<p>No history.</p>'; }
-        window.submitDeposit = async () => {
-    const user = auth.currentUser;
-    const amount = document.getElementById('depAmount').value;
-    const tid = document.getElementById('depTID').value;
-
-    if (!amount || !tid) {
-        alert("Please enter both Amount and TID!");
-        return;
-    }
-
-    try {
-        await addDoc(collection(db, "deposits"), {
-            userId: user.uid,
-            userName: user.email || "No Email",
-            amount: amount,
-            tid: tid,
-            status: "pending",
-            timestamp: new Date()
+            } else { container.innerHTML = '<p>No history found.</p>'; }
         });
-
-        alert("Request submitted! Admin will verify soon.");
-        closeAllModals();
-        document.getElementById('depAmount').value = '';
-        document.getElementById('depTID').value = '';
-    } catch (e) {
-        alert("Error: " + e.message);
-    }
-};
-
-        });
-        
     };
 </script>
