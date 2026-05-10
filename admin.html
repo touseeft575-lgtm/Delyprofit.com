@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+body{
+background:#0f172a;
+font-family:Arial;
+color:white;
+padding:15px;
+}
+.card{
+background:#1e293b;
+padding:15px;
+border-radius:15px;
+margin-bottom:15px;
+}
+button{
+padding:10px 15px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+margin-top:10px;
+}
+.approve{
+background:#22c55e;
+color:white;
+}
+.reject{
+background:#ef4444;
+color:white;
+}
+.title{
+font-size:22px;
+font-weight:bold;
+margin-bottom:20px;
+color:#ffcc00;
+}
+input{
+width:100%;
+padding:10px;
+background:#0f172a;
+border:1px solid #334155;
+color:white;
+border-radius:8px;
+margin-top:10px;
+box-sizing:border-box;
+}
+.section{
+margin-top:25px;
+}
+</style>
+</head>
+<body>
+
+<div class="title">DailyProfit Admin Panel</div>
+
+<div class="card">
+<h3>Total Users</h3>
+<div id="totalUsers">0</div>
+</div>
+
+<div class="card">
+<h3>Total Deposits</h3>
+<div id="totalDeposits">Rs 0</div>
+</div>
+
+<div class="card">
+<h3>Total Withdrawals</h3>
+<div id="totalWithdraws">Rs 0</div>
+</div>
+
+<div class="section">
+<h2 style="color:#ffcc00;">Deposit Requests</h2>
+<div id="depositRequests"></div>
+</div>
+
+<div class="section">
+<h2 style="color:#ffcc00;">Withdraw Requests</h2>
+<div id="withdrawRequests"></div>
+</div>
+
+<div class="section">
+<h2 style="color:#ffcc00;">Send Notification</h2>
+<div class="card">
+<input type="text" id="notifyUID" placeholder="User UID">
+<input type="text" id="notifyMsg" placeholder="Notification Message">
+<button class="approve" onclick="sendNotification()">Send Notification</button>
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+import {
+getFirestore,
+collection,
+onSnapshot,
+doc,
+updateDoc,
+getDoc,
+increment,
+arrayUnion,
+getDocs
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "YOUR_API_KEY",
+authDomain: "YOUR_AUTH_DOMAIN",
+projectId: "YOUR_PROJECT_ID",
+storageBucket: "YOUR_STORAGE_BUCKET",
+messagingSenderId: "YOUR_MSG_ID",
+appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const ADMIN_EMAIL = "admin@gmail.com";
+
+async function loadStats(){
+const users = await getDocs(collection(db,"users"));
+document.getElementById('totalUsers').innerText = users.size;
+}
+
+loadStats();
+
+onSnapshot(collection(db,"depositRequests"), (snapshot)=>{
+const container = document.getElementById('depositRequests');
+container.innerHTML = "";
+
+snapshot.forEach((docSnap)=>{
+const d = docSnap.data();
+
+container.innerHTML += `
+<div class="card">
+<div><b>User UID:</b> ${d.uid}</div>
+<div><b>Amount:</b> Rs ${d.amount}</div>
+<div><b>TID:</b> ${d.transactionID}</div>
+<div><b>Status:</b> ${d.status}</div>
+<a href="${d.screenshot}" target="_blank" style="color:#00d2ff;">View Screenshot</a><br>
+<button class="approve" onclick="approveDeposit('${docSnap.id}','${d.uid}',${d.amount})">Approve</button>
+<button class="reject" onclick="rejectDeposit('${docSnap.id}')">Reject</button>
+</div>
+`;
+});
+});
+
+onSnapshot(collection(db,"withdrawRequests"), (snapshot)=>{
+const container = document.getElementById('withdrawRequests');
+container.innerHTML = "";
+
+snapshot.forEach((docSnap)=>{
+const d = docSnap.data();
+
+container.innerHTML += `
+<div class="card">
+<div><b>User UID:</b> ${d.uid}</div>
+<div><b>Method:</b> ${d.method}</div>
+<div><b>Number:</b> ${d.number}</div>
+<div><b>Amount:</b> Rs ${d.amount}</div>
+<div><b>Status:</b> ${d.status}</div>
+<button class="approve" onclick="approveWithdraw('${docSnap.id}','${d.uid}',${d.amount})">Approve</button>
+<button class="reject" onclick="rejectWithdraw('${docSnap.id}')">Reject</button>
+</div>
+`;
+});
+});
+
+window.approveDeposit = async (requestId, uid, amount)=>{
+const userRef = doc(db,"users",uid);
+const reqRef = doc(db,"depositRequests",requestId);
+
+await updateDoc(userRef, {
+balance: increment(amount),
+notifications: arrayUnion({
+message: "Deposit Approved Successfully",
+time: new Date().toISOString()
+})
+});
+
+await updateDoc(reqRef, {
+status: "Approved"
+});
+
+alert("Deposit Approved");
+}
+
+window.rejectDeposit = async (requestId)=>{
+await updateDoc(doc(db,"depositRequests",requestId), {
+status: "Rejected"
+});
+alert("Deposit Rejected");
+}
+
+window.approveWithdraw = async (requestId, uid, amount)=>{
+const reqRef = doc(db,"withdrawRequests",requestId);
+const userRef = doc(db,"users",uid);
+
+await updateDoc(reqRef, {
+status: "Approved"
+});
+
+await updateDoc(userRef, {
+notifications: arrayUnion({
+message: "Withdraw Successful",
+time: new Date().toISOString()
+})
+});
+
+alert("Withdraw Approved");
+}
+
+window.rejectWithdraw = async (requestId)=>{
+await updateDoc(doc(db,"withdrawRequests",requestId), {
+status: "Rejected"
+});
+alert("Withdraw Rejected");
+}
+
+window.sendNotification = async ()=>{
+const uid = document.getElementById('notifyUID').value;
+const msg = document.getElementById('notifyMsg').value;
+
+await updateDoc(doc(db,"users",uid), {
+notifications: arrayUnion({
+message: msg,
+time: new Date().toISOString()
+})
+});
+
+alert("Notification Sent");
+}
+</script>
+</body>
+</html>
