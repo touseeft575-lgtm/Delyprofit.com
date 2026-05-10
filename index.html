@@ -748,6 +748,228 @@ closeAll();
 }
 
 </script>
+<script type="module">
 
+// FIREBASE IMPORT
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+// FIREBASE CONFIG
+const firebaseConfig = {
+apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMIcnvYW-D-67g",
+authDomain: "dailyprofit-b9600.firebaseapp.com",
+projectId: "dailyprofit-b9600",
+storageBucket: "dailyprofit-b9600.firebasestorage.app",
+messagingSenderId: "879891413676",
+appId: "1:879891413676:web:bfba99ee5b95c45b957d09",
+measurementId: "G-T5FJ81FP62"
+};
+
+
+// INITIALIZE
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+// VIP PLANS
+const plans = [
+{
+name:"VIP1",
+price:500,
+daily:120
+},
+{
+name:"VIP2",
+price:1000,
+daily:240
+},
+{
+name:"VIP3",
+price:2000,
+daily:480
+},
+{
+name:"VIP4",
+price:5000,
+daily:1200
+},
+{
+name:"VIP5",
+price:10000,
+daily:2500
+},
+{
+name:"VIP6",
+price:20000,
+daily:5000
+}
+];
+
+
+// SHOW PLANS
+const plansDiv = document.getElementById("plans");
+
+plans.forEach(plan=>{
+
+plansDiv.innerHTML += `
+
+<div style="
+background:#14213d;
+padding:15px;
+border-radius:15px;
+margin-bottom:15px;
+border:2px solid gold;
+">
+
+<h2>${plan.name}</h2>
+
+<p>Invest Rs.${plan.price}</p>
+
+<p>Daily Income Rs.${plan.daily}</p>
+
+<button
+onclick="activatePlan('${plan.name}',${plan.price})"
+style="
+background:gold;
+color:black;
+padding:10px;
+border:none;
+border-radius:10px;
+font-weight:bold;
+width:100%;
+">
+
+Activate
+
+</button>
+
+</div>
+
+`;
+
+});
+
+
+// OPEN MODAL
+window.showModal = function(id){
+
+document.getElementById(id).style.display="block";
+
+document.getElementById("overlay").style.display="block";
+
+}
+
+
+// CLOSE ALL
+window.closeAll = function(){
+
+document.querySelectorAll(".modal").forEach(modal=>{
+
+modal.style.display="none";
+
+});
+
+document.getElementById("overlay").style.display="none";
+
+}
+
+
+// DAILY CHECKIN
+window.dailyCheckin = function(){
+
+alert("Daily Check-in Successful. Rs.20 Added");
+
+}
+
+
+// SPIN WHEEL
+window.spinWheel = function(){
+
+const rewards = [10,50,100,0];
+
+const reward =
+rewards[Math.floor(Math.random()*rewards.length)];
+
+if(reward===0){
+
+alert("Better Luck Next Time");
+
+}else{
+
+alert("You Won Rs."+reward);
+
+}
+
+}
+
+
+// ACTIVATE PLAN
+window.activatePlan = function(name,price){
+
+alert(name+" Activated Successfully");
+
+}
+
+
+// DEPOSIT
+window.submitDeposit = async function(){
+
+const amount =
+document.getElementById("depAmount").value;
+
+const trx =
+document.getElementById("depId").value;
+
+await addDoc(collection(db,"deposits"),{
+
+amount,
+trx,
+status:"Pending",
+createdAt:new Date()
+
+});
+
+alert("Deposit Submitted");
+
+closeAll();
+
+}
+
+
+// WITHDRAW
+window.submitWithdraw = async function(){
+
+const method =
+document.getElementById("withdrawMethod").value;
+
+const number =
+document.getElementById("withdrawNumber").value;
+
+const amount =
+document.getElementById("withdrawAmount").value;
+
+await addDoc(collection(db,"withdrawRequests"),{
+
+method,
+number,
+amount,
+status:"Pending",
+createdAt:new Date()
+
+});
+
+alert("Withdraw Submitted");
+
+closeAll();
+
+}
+
+</script>
 </body>
 </html>
