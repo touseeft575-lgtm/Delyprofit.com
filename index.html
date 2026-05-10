@@ -581,12 +581,9 @@ document.getElementById('overlay').style.display='none';
 
 
 // PLAN ACTIVATE
-// PLAN ACTIVATE
+window.activatePlan = async function(amount, daily){
 
-
-window.activatePlan = function(amount, daily){
-
-let balance =
+const balance =
 parseInt(document.getElementById("balance").innerText) || 0;
 
 if(balance < amount){
@@ -597,7 +594,8 @@ return;
 
 }
 
-let newBalance = balance - amount;
+// balance update on screen
+const newBalance = balance - amount;
 
 document.getElementById("balance").innerText = newBalance;
 
