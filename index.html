@@ -394,6 +394,7 @@ Support
 </div>
 
 <!-- SCRIPT -->
+<!-- REPLACE ONLY THIS SCRIPT SECTION -->
 
 <script type="module">
 
@@ -426,6 +427,7 @@ getDownloadURL
 "https://www.gstatic.com/firebasejs/9.17.1/firebase-storage.js";
 
 
+// USER UID
 const uid =
 localStorage.getItem("uid");
 
@@ -440,13 +442,11 @@ window.location =
 
 
 // USER REF
-
 const userRef =
 doc(db,"users",uid);
 
 
 // VIP PLANS
-
 const vipPlans = [
 
 {
@@ -488,8 +488,7 @@ daily:5200
 ];
 
 
-// SHOW PLANS
-
+// SHOW VIP PLANS
 document.getElementById('plans').innerHTML =
 
 vipPlans.map(plan=>`
@@ -511,7 +510,7 @@ Daily ₹${plan.daily}
 </div>
 
 <button class="btn"
-onclick="activatePlan(${plan.price},${plan.daily})">
+onclick="activatePlan('${plan.name}',${plan.amount})">
 
 Activate
 
@@ -522,8 +521,8 @@ Activate
 `).join('');
 
 
-// REALTIME USER DATA
 
+// REALTIME USER DATA
 onSnapshot(userRef,(snap)=>{
 
 if(snap.exists()){
@@ -539,6 +538,8 @@ d.todayProfit || 0;
 document.getElementById('totalProfit').innerText =
 d.totalProfit || 0;
 
+
+// NOTIFICATIONS
 if(d.notifications){
 
 document.getElementById('notifications').innerHTML =
@@ -560,8 +561,7 @@ ${n.message}
 });
 
 
-// MODALS
-
+// OPEN MODAL
 window.showModal=(id)=>{
 
 document.getElementById(id).style.display='block';
@@ -570,6 +570,8 @@ document.getElementById('overlay').style.display='block';
 
 }
 
+
+// CLOSE MODAL
 window.closeAll=()=>{
 
 document.querySelectorAll('.modal')
@@ -580,33 +582,51 @@ document.getElementById('overlay').style.display='none';
 }
 
 
-// PLAN ACTIVATE
-window.activatePlan = async function(amount, daily){
+// ACTIVATE PLAN
+window.activatePlan =
+async function(name,amount){
+
+const snap =
+await getDoc(userRef);
+
+const data =
+snap.data();
 
 const balance =
-parseInt(document.getElementById("balance").innerText) || 0;
+data.balance || 0;
 
+
+// BALANCE CHECK
 if(balance < amount){
 
-alert("Insufficient Balance! Please recharge first.");
+alert("Recharge Required! Please deposit first.");
 
 return;
 
 }
 
-// balance update on screen
-const newBalance = balance - amount;
 
-document.getElementById("balance").innerText = newBalance;
+// UPDATE FIREBASE
+await updateDoc(userRef,{
 
-alert("VIP Plan Activated Successfully");
+balance: increment(-amount),
+
+activePlans: arrayUnion({
+
+name:name,
+amount:amount,
+status:"Active"
+
+})
+
+});
+
+alert(name + " Activated Successfully");
 
 }
 
 
-
-// DAILY CHECKIN
-
+// DAILY CHECK-IN
 window.dailyCheckin =
 async()=>{
 
@@ -622,7 +642,6 @@ alert("₹20 Added");
 
 
 // SPIN WHEEL
-
 window.spinWheel =
 async()=>{
 
@@ -652,7 +671,6 @@ alert("You Won ₹"+reward);
 
 
 // DEPOSIT
-
 window.submitDeposit =
 async()=>{
 
@@ -673,6 +691,8 @@ return;
 
 }
 
+
+// FIREBASE STORAGE
 const storageRef =
 ref(storage,
 'screenshots/'+Date.now());
@@ -682,6 +702,8 @@ await uploadBytes(storageRef,file);
 const imageUrl =
 await getDownloadURL(storageRef);
 
+
+// SAVE REQUEST
 await addDoc(
 collection(db,"depositRequests"),
 {
@@ -703,7 +725,6 @@ closeAll();
 
 
 // WITHDRAW
-
 window.submitWithdraw =
 async()=>{
 
@@ -716,6 +737,8 @@ document.getElementById('withdrawNumber').value;
 const amount =
 document.getElementById('withdrawAmount').value;
 
+
+// SAVE REQUEST
 await addDoc(
 collection(db,"withdrawRequests"),
 {
@@ -735,222 +758,100 @@ closeAll();
 
 }
 
-</script>
-<script type="module">
 
-// FIREBASE IMPORT
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+// HISTORY
+window.showHistory =
+async()=>{
 
-import {
-getFirestore,
-collection,
-addDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const snap =
+await getDoc(userRef);
 
+if(!snap.exists()) return;
 
-// FIREBASE CONFIG
-const firebaseConfig = {
-apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMIcnvYW-D-67g",
-authDomain: "dailyprofit-b9600.firebaseapp.com",
-projectId: "dailyprofit-b9600",
-storageBucket: "dailyprofit-b9600.firebasestorage.app",
-messagingSenderId: "879891413676",
-appId: "1:879891413676:web:bfba99ee5b95c45b957d09",
-measurementId: "G-T5FJ81FP62"
-};
+const data =
+snap.data();
+
+let txt =
+"Deposit / Withdraw History\n\n";
 
 
-// INITIALIZE
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// DEPOSITS
+if(data.depositHistory){
 
+txt +=
+"DEPOSITS\n";
 
-// VIP PLANS
-const plans = [
-{
-name:"VIP1",
-price:500,
-daily:120
-},
-{
-name:"VIP2",
-price:1000,
-daily:240
-},
-{
-name:"VIP3",
-price:2000,
-daily:480
-},
-{
-name:"VIP4",
-price:5000,
-daily:1200
-},
-{
-name:"VIP5",
-price:10000,
-daily:2500
-},
-{
-name:"VIP6",
-price:20000,
-daily:5000
-}
-];
+data.depositHistory.forEach(d=>{
 
-
-// SHOW PLANS
-const plansDiv = document.getElementById("plans");
-
-plans.forEach(plan=>{
-
-plansDiv.innerHTML += `
-
-<div style="
-background:#14213d;
-padding:15px;
-border-radius:15px;
-margin-bottom:15px;
-border:2px solid gold;
-">
-
-<h2>${plan.name}</h2>
-
-<p>Invest Rs.${plan.price}</p>
-
-<p>Daily Income Rs.${plan.daily}</p>
-
-<button
-onclick="activatePlan('${plan.name}',${plan.price})"
-style="
-background:gold;
-color:black;
-padding:10px;
-border:none;
-border-radius:10px;
-font-weight:bold;
-width:100%;
-">
-
-Activate
-
-</button>
-
-</div>
-
-`;
+txt +=
+"₹"+d.amount+
+" | "+d.status+"\n";
 
 });
 
-
-// OPEN MODAL
-window.showModal = function(id){
-
-document.getElementById(id).style.display="block";
-
-document.getElementById("overlay").style.display="block";
-
 }
 
 
-// CLOSE ALL
-window.closeAll = function(){
+// WITHDRAWS
+if(data.withdrawHistory){
 
-document.querySelectorAll(".modal").forEach(modal=>{
+txt +=
+"\nWITHDRAW\n";
 
-modal.style.display="none";
+data.withdrawHistory.forEach(w=>{
+
+txt +=
+"₹"+w.amount+
+" | "+w.status+"\n";
 
 });
 
-document.getElementById("overlay").style.display="none";
+}
+
+
+alert(txt);
 
 }
 
 
-// DAILY CHECKIN
-window.dailyCheckin = function(){
+// ACTIVE PLANS
+window.showPlans =
+async()=>{
 
-alert("Daily Check-in Successful. Rs.20 Added");
+const snap =
+await getDoc(userRef);
 
-}
+if(!snap.exists()) return;
 
+const data =
+snap.data();
 
-// SPIN WHEEL
-window.spinWheel = function(){
+const plans =
+data.activePlans || [];
 
-const rewards = [10,50,100,0];
+if(plans.length === 0){
 
-const reward =
-rewards[Math.floor(Math.random()*rewards.length)];
+alert("No Active Plans");
 
-if(reward===0){
-
-alert("Better Luck Next Time");
-
-}else{
-
-alert("You Won Rs."+reward);
+return;
 
 }
 
-}
+let txt =
+"YOUR ACTIVE PLANS\n\n";
 
+plans.forEach(p=>{
 
-
-// DEPOSIT
-window.submitDeposit = async function(){
-
-const amount =
-document.getElementById("depAmount").value;
-
-const trx =
-document.getElementById("depId").value;
-
-await addDoc(collection(db,"deposits"),{
-
-amount,
-trx,
-status:"Pending",
-createdAt:new Date()
+txt +=
+p.name+
+" | ₹"+
+p.amount+
+"\n";
 
 });
 
-alert("Deposit Submitted");
-
-closeAll();
-
-}
-
-
-// WITHDRAW
-window.submitWithdraw = async function(){
-
-const method =
-document.getElementById("withdrawMethod").value;
-
-const number =
-document.getElementById("withdrawNumber").value;
-
-const amount =
-document.getElementById("withdrawAmount").value;
-
-await addDoc(collection(db,"withdrawRequests"),{
-
-method,
-number,
-amount,
-status:"Pending",
-createdAt:new Date()
-
-});
-
-alert("Withdraw Submitted");
-
-closeAll();
+alert(txt);
 
 }
 
 </script>
-</body>
-</html>
