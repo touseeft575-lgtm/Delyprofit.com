@@ -583,56 +583,27 @@ document.getElementById('overlay').style.display='none';
 // PLAN ACTIVATE
 // PLAN ACTIVATE
 
-window.activatePlan = async (amount, daily) => {
 
-const snap = await getDoc(userRef);
+window.activatePlan = function(amount, daily){
 
-const data = snap.data();
+let balance =
+parseInt(document.getElementById("balance").innerText) || 0;
 
-// CHECK BALANCE
-if (!data.balance || data.balance < amount) {
+if(balance < amount){
 
-alert("Recharge Required! Please recharge your balance first.");
-
-return;
-
-}
-
-// PLAN CONFIRMATION
-const confirmPlan = confirm(
-`Do you want to activate this plan?
-
-Investment: Rs.${amount}
-Daily Income: Rs.${daily}
-
-Rs.${amount} will be deducted from your balance.`
-);
-
-if (!confirmPlan) {
+alert("Insufficient Balance! Please recharge first.");
 
 return;
 
 }
 
-// ACTIVATE PLAN
-await updateDoc(userRef, {
+let newBalance = balance - amount;
 
-balance: increment(-amount),
-
-activePlans: arrayUnion({
-
-amount: amount,
-
-daily: daily,
-
-createdAt: new Date()
-
-})
-
-});
+document.getElementById("balance").innerText = newBalance;
 
 alert("VIP Plan Activated Successfully");
 
+}
 
 
 
