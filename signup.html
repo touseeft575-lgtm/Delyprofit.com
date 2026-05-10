@@ -1,65 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - DailyProfit</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #1e293b; padding: 30px; border-radius: 20px; width: 320px; border: 1px solid #ffcc00; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; background: #ffcc00; color: black; font-weight: bold; cursor: pointer; }
-    </style>
+<title>Signup</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <div class="card">
-        <h2 style="color: #ffcc00;">Create Account</h2>
-        <input type="text" id="name" placeholder="Full Name">
-        <input type="email" id="email" placeholder="Email Address">
-        <input type="password" id="pass" placeholder="Password">
-        <button class="btn" onclick="signUp()">Register Now</button>
-        <p>Already have an account? <a href="login.html" style="color:#ffcc00;">Login</a></p>
-    </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<div class="title">Signup</div>
 
-        const firebaseConfig = {
-                apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMIcnvYW-D-67g",
-    authDomain: "dailyprofit-b9600.firebaseapp.com",
-    projectId: "dailyprofit-b9600",
-    storageBucket: "dailyprofit-b9600.firebasestorage.app",
-    messagingSenderId: "879891413676",
-    appId: "1:879891413676:web:bfba99ee5b95c45b957d09",
-    measurementId: "G-T5FJ81FP62"
+<div class="card">
 
-        };
+<input type="text" id="username" placeholder="Username">
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+<input type="text" id="phone" placeholder="Phone Number">
 
-        window.signUp = async () => {
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
+<input type="password" id="password" placeholder="Password">
 
-            try {
-                const res = await createUserWithEmailAndPassword(auth, email, pass);
-                await setDoc(doc(db, "users", res.user.uid), {
-                    username: name,
-                    email: email,
-                    balance: 0,
-                    dailyProfit: 0,
-                    totalWithdraw: 0,
-                    role: "user"
-                });
-                alert("Account Created!");
-                window.location.href = "index.html";
-            } catch (err) { alert(err.message); }
-        };
-    </script>
+<input type="text" id="referral" placeholder="Referral Code">
+
+<button class="btn" onclick="signup()">
+Create Account
+</button>
+
+</div>
+
+<script type="module">
+
+import { auth, db } from './firebase.js';
+
+import {
+createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+
+import {
+doc,
+setDoc
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
+window.signup = async ()=>{
+
+const username =
+document.getElementById('username').value;
+
+const phone =
+document.getElementById('phone').value;
+
+const password =
+document.getElementById('password').value;
+
+const referral =
+document.getElementById('referral').value;
+
+const fakeEmail =
+phone + "@dailyprofit.com";
+
+const user =
+await createUserWithEmailAndPassword(
+auth,
+fakeEmail,
+password
+);
+
+await setDoc(doc(db,"users",user.user.uid),{
+
+username,
+phone,
+balance:0,
+todayProfit:0,
+totalProfit:0,
+referral,
+notifications:[]
+});
+
+alert("Signup Successful");
+
+window.location = "login.html";
+
+}
+
+</script>
+
 </body>
 </html>
