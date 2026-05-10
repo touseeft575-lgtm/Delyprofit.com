@@ -1,67 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - DailyProfit</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #1e293b; padding: 30px; border-radius: 20px; width: 320px; border: 1px solid #334155; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; background: #ffcc00; color: #0f172a; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn:disabled { background: #666; cursor: not-allowed; }
-    </style>
+<title>Login</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <div class="card">
-        <h2 style="color: #ffcc00;">Welcome Back</h2>
-        <input type="email" id="email" placeholder="Email Address">
-        <input type="password" id="pass" placeholder="Password">
-        <button class="btn" id="loginBtn">Login Now</button>
-        <p>Don't have an account? <a href="signup.html" style="color:#ffcc00;">Register</a></p>
-    </div>
+<div class="title">Login</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+<div class="card">
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBLygZa2EDyHBuCT8RTZEMIcnvYW-D-67g",
-            authDomain: "dailyprofit-b9600.firebaseapp.com",
-            projectId: "dailyprofit-b9600",
-            storageBucket: "dailyprofit-b9600.firebasestorage.app",
-            messagingSenderId: "879891413676",
-            appId: "1:879891413676:web:bfba99ee5b95c45b957d09",
-            measurementId: "G-T5FJ81FP62"
-        };
+<input type="text" id="phone" placeholder="Phone Number">
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+<input type="password" id="password" placeholder="Password">
 
-        const loginBtn = document.getElementById('loginBtn');
+<button class="btn" onclick="login()">
+Login
+</button>
 
-        loginBtn.addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
+</div>
 
-            if(!email || !pass) {
-                alert("Please enter email and password");
-                return;
-            }
+<script type="module">
 
-            loginBtn.disabled = true;
-            loginBtn.innerText = "Checking...";
+import { auth } from './firebase.js';
 
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-                window.location.href = "index.html";
-            } catch (err) {
-                alert("Login Error: " + err.message);
-                loginBtn.disabled = false;
-                loginBtn.innerText = "Login Now";
-            }
-        });
-    </script>
+import {
+signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+
+window.login = async ()=>{
+
+const phone =
+document.getElementById('phone').value;
+
+const password =
+document.getElementById('password').value;
+
+const fakeEmail =
+phone + "@dailyprofit.com";
+
+const user =
+await signInWithEmailAndPassword(
+auth,
+fakeEmail,
+password
+);
+
+localStorage.setItem(
+"uid",
+user.user.uid
+);
+
+window.location = "index.html";
+
+}
+
+</script>
+
 </body>
 </html>
