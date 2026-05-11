@@ -593,6 +593,26 @@ alert("VIP Activated");
 
 window.dailyCheckin = async function(){
 
+const lastCheckin =
+localStorage.getItem("lastCheckin");
+
+const now = Date.now();
+
+if(lastCheckin){
+
+const difference =
+now - parseInt(lastCheckin);
+
+if(difference < 86400000){
+
+alert("Daily Check-In Already Claimed");
+
+return;
+
+}
+
+}
+
 await updateDoc(userRef,{
 
 balance: increment(20),
@@ -601,11 +621,36 @@ totalProfit: increment(20)
 
 });
 
+localStorage.setItem(
+"lastCheckin",
+now
+);
+
 alert("Rs.20 Added");
 
 }
 
 window.spinWheel = async function(){
+
+const lastSpin =
+localStorage.getItem("lastSpin");
+
+const now = Date.now();
+
+if(lastSpin){
+
+const difference =
+now - parseInt(lastSpin);
+
+if(difference < 86400000){
+
+alert("Spin Already Used Today");
+
+return;
+
+}
+
+}
 
 const rewards = [0,10,50,100];
 
@@ -628,12 +673,17 @@ alert("You Won Rs."+reward);
 
 }
 
+localStorage.setItem(
+"lastSpin",
+now
+);
+
 }
 
 window.submitDeposit = async function(){
 
 const amount =
-document.getElementById("depAmount").value;
+parseInt(document.getElementById("depAmount").value);
 
 const tid =
 document.getElementById("depTid").value;
@@ -644,6 +694,22 @@ document.getElementById("screenshot").files[0];
 if(!amount || !tid || !file){
 
 alert("Fill All Fields");
+
+return;
+
+}
+
+if(amount < 500){
+
+alert("Minimum Deposit is Rs.500");
+
+return;
+
+}
+
+if(amount > 30000){
+
+alert("Maximum Deposit is Rs.30000");
 
 return;
 
@@ -683,7 +749,23 @@ const number =
 document.getElementById("withdrawNumber").value;
 
 const amount =
-document.getElementById("withdrawAmount").value;
+parseInt(document.getElementById("withdrawAmount").value);
+
+if(amount < 500){
+
+alert("Minimum Withdraw is Rs.500");
+
+return;
+
+}
+
+if(amount > 30000){
+
+alert("Maximum Withdraw is Rs.30000");
+
+return;
+
+}
 
 await addDoc(collection(db,"withdrawRequests"),{
 
