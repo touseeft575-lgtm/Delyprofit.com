@@ -22,7 +22,9 @@
 <button class="btn" onclick="signup()">
 Create Account
 </button>
-
+<button class="btn" onclick="window.location='login.html'">
+Login
+</button>
 </div>
 
 <script type="module">
@@ -53,8 +55,7 @@ const referral =
 document.getElementById('referral').value;
 
 const fakeEmail =
-phone + "@dailyprofit.com";
-
+phone + "@gmail.com";
 const user =
 await createUserWithEmailAndPassword(
 auth,
