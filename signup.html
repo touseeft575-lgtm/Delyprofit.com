@@ -13,7 +13,6 @@
 
 <input type="email" id="email" placeholder="Email">
 
-<input type="text" id="phone" placeholder="Phone Number">
 
 <input type="password" id="password" placeholder="Password">
 
@@ -42,11 +41,10 @@ setDoc
 
 window.signup = async ()=>{
 
-const username =
-document.getElementById('username').value;
+const email =
+document.getElementById('email').value;
+  
 
-const phone =
-document.getElementById('phone').value;
 
 const password =
 document.getElementById('password').value;
@@ -54,8 +52,7 @@ document.getElementById('password').value;
 const referral =
 document.getElementById('referral').value;
 
-const fakeEmail =
-phone + "@gmail.com";
+const fakeEmail = email;
 const user =
 await createUserWithEmailAndPassword(
 auth,
@@ -65,7 +62,7 @@ password
 
 await setDoc(doc(db,"users",user.user.uid),{
 
-username,
+email,
 phone,
 balance:0,
 todayProfit:0,
