@@ -603,8 +603,19 @@ document.getElementById(id).style.display = "block";
 document.getElementById("overlay").style.display = "block";
 
 }
-
 window.closeAll = function(){
+
+document.querySelectorAll(".modal").forEach(modal=>{
+
+modal.style.display = "none";
+
+});
+
+document.getElementById("overlay").style.display = "none";
+
+}
+
+
 // SUPPORT BUTTON
 window.openSupport = function(){
 
@@ -614,6 +625,7 @@ window.open(
 );
 
 }
+
 
 // LOGOUT BUTTON
 window.logoutUser = function(){
@@ -625,16 +637,8 @@ alert("Logged Out Successfully");
 window.location.href = "login.html";
 
 }
-document.querySelectorAll(".modal").forEach(modal=>{
 
-modal.style.display = "none";
-
-});
-
-document.getElementById("overlay").style.display = "none";
-
-}
-
+  
 
 // ACTIVATE PLAN
 
