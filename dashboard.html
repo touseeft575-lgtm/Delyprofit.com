@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -23,28 +22,29 @@ font-family:Arial;
 body{
 background:#06152b;
 color:white;
-padding:15px;
-padding-bottom:100px;
+padding:12px;
+padding-bottom:90px;
+zoom:0.92;
 }
 
 .topbar{
 display:flex;
 justify-content:space-between;
 align-items:center;
-margin-bottom:20px;
+margin-bottom:15px;
 }
 
 .logo{
-font-size:30px;
+font-size:24px;
 font-weight:bold;
 }
 
 .logout-btn{
 background:#ffcc00;
 border:none;
-padding:12px 20px;
+padding:10px 18px;
 border-radius:12px;
-font-size:18px;
+font-size:16px;
 font-weight:bold;
 cursor:pointer;
 }
@@ -52,32 +52,32 @@ cursor:pointer;
 .stats-grid{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:15px;
-margin-bottom:20px;
+gap:12px;
+margin-bottom:15px;
 }
 
 .stat-box{
 background:#152238;
-padding:20px;
-border-radius:25px;
+padding:18px;
+border-radius:22px;
 text-align:center;
 }
 
 .balance-card{
 background:#152238;
-padding:30px;
-border-radius:30px;
+padding:25px;
+border-radius:25px;
 text-align:center;
-margin-bottom:20px;
+margin-bottom:18px;
 }
 
 .balance-title{
-font-size:22px;
+font-size:20px;
 margin-bottom:10px;
 }
 
 .balance{
-font-size:65px;
+font-size:55px;
 font-weight:bold;
 color:#ffcc00;
 }
@@ -85,39 +85,39 @@ color:#ffcc00;
 .action-grid{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:20px;
-margin-bottom:20px;
+gap:15px;
+margin-bottom:18px;
 }
 
 .action-card{
 background:#152238;
-padding:35px 20px;
-border-radius:25px;
+padding:28px 18px;
+border-radius:22px;
 text-align:center;
 cursor:pointer;
 }
 
 .action-card i{
-font-size:45px;
+font-size:38px;
 color:#ffcc00;
-margin-bottom:15px;
+margin-bottom:12px;
 }
 
 .action-card div{
-font-size:22px;
+font-size:18px;
 }
 
 .section-title{
-font-size:28px;
+font-size:24px;
 font-weight:bold;
-margin:25px 0 15px;
+margin:20px 0 12px;
 }
 
 .plan-card{
 background:#152238;
-padding:25px;
-border-radius:25px;
-margin-bottom:20px;
+padding:20px;
+border-radius:22px;
+margin-bottom:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
@@ -126,18 +126,19 @@ align-items:center;
 .activate-btn{
 background:#ffcc00;
 border:none;
-padding:15px 25px;
-border-radius:15px;
-font-size:20px;
+padding:12px 20px;
+border-radius:12px;
+font-size:16px;
 font-weight:bold;
 cursor:pointer;
 }
 
 .notice{
 background:#152238;
-padding:15px;
-border-radius:15px;
+padding:12px;
+border-radius:12px;
 margin-bottom:10px;
+font-size:14px;
 }
 
 .modal{
@@ -147,11 +148,13 @@ top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 background:#152238;
-padding:25px;
-border-radius:25px;
+padding:22px;
+border-radius:22px;
 width:90%;
 max-width:400px;
 z-index:1000;
+max-height:90vh;
+overflow:auto;
 }
 
 .overlay{
@@ -167,23 +170,23 @@ z-index:999;
 
 input,select{
 width:100%;
-padding:15px;
-margin-top:12px;
+padding:13px;
+margin-top:10px;
 border:none;
 border-radius:12px;
 background:#081225;
 color:white;
-font-size:16px;
+font-size:15px;
 }
 
 .btn{
 width:100%;
-padding:15px;
-margin-top:15px;
+padding:14px;
+margin-top:14px;
 border:none;
 border-radius:12px;
 background:#00d2ff;
-font-size:18px;
+font-size:16px;
 font-weight:bold;
 cursor:pointer;
 }
@@ -196,19 +199,27 @@ width:100%;
 background:#152238;
 display:flex;
 justify-content:space-around;
-padding:15px 0;
+padding:12px 0;
 }
 
 .nav-item{
 text-align:center;
-font-size:14px;
+font-size:13px;
 color:white;
 }
 
 .nav-item i{
 display:block;
-font-size:24px;
-margin-bottom:5px;
+font-size:22px;
+margin-bottom:4px;
+}
+
+.history-box{
+background:#081225;
+padding:12px;
+border-radius:12px;
+margin-top:10px;
+font-size:14px;
 }
 
 a{
@@ -217,7 +228,6 @@ color:white;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -228,8 +238,7 @@ color:white;
 DailyProfit
 </div>
 
-<button class="logout-btn"
-onclick="logoutUser()">
+<button class="logout-btn" onclick="logoutUser()">
 Logout
 </button>
 
@@ -237,23 +246,21 @@ Logout
 
 <div class="stats-grid">
 
-<div class="stat-box"
-style="border:2px solid #00ff66;">
+<div class="stat-box" style="border:2px solid #00ff66;">
 
 <div>Aaj Ka Profit</div>
 
-<h2 style="color:#00ff66;font-size:45px;">
+<h2 style="color:#00ff66;font-size:38px;">
 Rs. <span id="todayProfit">0</span>
 </h2>
 
 </div>
 
-<div class="stat-box"
-style="border:2px solid #ffcc00;">
+<div class="stat-box" style="border:2px solid #ffcc00;">
 
 <div>Total Profit</div>
 
-<h2 style="color:#ffcc00;font-size:45px;">
+<h2 style="color:#ffcc00;font-size:38px;">
 Rs. <span id="totalProfit">0</span>
 </h2>
 
@@ -275,44 +282,28 @@ Rs. <span id="balance">0</span>
 
 <div class="action-grid">
 
-<div class="action-card"
-onclick="showModal('depositModal')">
-
+<div class="action-card" onclick="showModal('depositModal')">
 <i class="fas fa-university"></i>
-
 <div>Deposit</div>
-
 </div>
 
-<div class="action-card"
-onclick="showModal('withdrawModal')">
-
+<div class="action-card" onclick="showModal('withdrawModal')">
 <i class="fas fa-wallet"></i>
-
 <div>Withdraw</div>
-
 </div>
 
 </div>
 
 <div class="action-grid">
 
-<div class="action-card"
-onclick="dailyCheckin()">
-
+<div class="action-card" onclick="dailyCheckin()">
 <i class="fas fa-calendar-check"></i>
-
 <div>Daily Check-In</div>
-
 </div>
 
-<div class="action-card"
-onclick="spinWheel()">
-
+<div class="action-card" onclick="spinWheel()">
 <i class="fas fa-gift"></i>
-
 <div>Spin Wheel</div>
-
 </div>
 
 </div>
@@ -329,15 +320,11 @@ Notifications
 
 <div id="notifications"></div>
 
-<div id="overlay"
-class="overlay"
-onclick="closeAll()">
-</div>
+<div id="overlay" class="overlay" onclick="closeAll()"></div>
 
 <!-- Deposit Modal -->
 
-<div id="depositModal"
-class="modal">
+<div id="depositModal" class="modal">
 
 <h2>Deposit</h2>
 
@@ -353,54 +340,46 @@ EasyPaisa Number
 Name: Mohammed Tauseef Ahmed
 </p>
 
-<input type="number"
-id="depAmount"
-placeholder="Enter Amount">
+<input type="number" id="depAmount" placeholder="Enter Amount">
 
-<input type="text"
-id="depTid"
-placeholder="Transaction ID">
+<input type="text" id="depTid" placeholder="Transaction ID">
 
-<input type="file"
-id="screenshot">
+<input type="file" id="screenshot">
 
-<button class="btn"
-onclick="submitDeposit()">
-
+<button class="btn" onclick="submitDeposit()">
 Submit Deposit
-
 </button>
 
 </div>
 
 <!-- Withdraw Modal -->
 
-<div id="withdrawModal"
-class="modal">
+<div id="withdrawModal" class="modal">
 
 <h2>Withdraw</h2>
 
 <select id="withdrawMethod">
-
 <option>EasyPaisa</option>
 <option>JazzCash</option>
-
 </select>
 
-<input type="text"
-id="withdrawNumber"
-placeholder="Phone Number">
+<input type="text" id="withdrawNumber" placeholder="Phone Number">
 
-<input type="number"
-id="withdrawAmount"
-placeholder="Amount">
+<input type="number" id="withdrawAmount" placeholder="Amount">
 
-<button class="btn"
-onclick="submitWithdraw()">
-
+<button class="btn" onclick="submitWithdraw()">
 Withdraw
-
 </button>
+
+</div>
+
+<!-- History Modal -->
+
+<div id="historyModal" class="modal">
+
+<h2>Transaction History</h2>
+
+<div id="historyData"></div>
 
 </div>
 
@@ -409,21 +388,20 @@ Withdraw
 <div class="navbar">
 
 <div class="nav-item">
-
 <i class="fas fa-home"></i>
-
 Home
+</div>
 
+<div class="nav-item" onclick="showHistory()">
+<i class="fas fa-clock-rotate-left"></i>
+History
 </div>
 
 <a href="https://wa.me/923297179402">
 
 <div class="nav-item">
-
 <i class="fab fa-whatsapp"></i>
-
 Support
-
 </div>
 
 </a>
@@ -441,16 +419,19 @@ updateDoc,
 increment,
 arrayUnion,
 addDoc,
-collection
-}
-from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+collection,
+query,
+where,
+getDocs
+
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
 import {
 ref,
 uploadBytes,
 getDownloadURL
-}
-from "https://www.gstatic.com/firebasejs/9.17.1/firebase-storage.js";
+
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-storage.js";
 
 const uid = localStorage.getItem("uid");
 
@@ -469,8 +450,7 @@ const vipPlans = [
 
 ];
 
-const plansDiv =
-document.getElementById("plans");
+const plansDiv = document.getElementById("plans");
 
 vipPlans.forEach(plan=>{
 
@@ -479,17 +459,9 @@ plansDiv.innerHTML += `
 <div class="plan-card">
 
 <div>
-
 <h2>${plan.name}</h2>
-
-<p>
-Invest Rs.${plan.amount}
-</p>
-
-<p>
-Daily Rs.${plan.daily}
-</p>
-
+<p>Invest Rs.${plan.amount}</p>
+<p>Daily Rs.${plan.daily}</p>
 </div>
 
 <button class="activate-btn"
@@ -511,8 +483,7 @@ if(snap.exists()){
 
 const d = snap.data();
 
-document.getElementById("balance").innerText =
-d.balance || 0;
+document.getElementById("balance").innerText = d.balance || 0;
 
 document.getElementById("todayProfit").innerText =
 d.todayProfit || 0;
@@ -527,9 +498,7 @@ document.getElementById("notifications").innerHTML =
 d.notifications.map(n=>`
 
 <div class="notice">
-
 ${n.message}
-
 </div>
 
 `).join('');
@@ -582,9 +551,7 @@ return;
 }
 
 await updateDoc(userRef,{
-
 balance: increment(-amount)
-
 });
 
 alert("VIP Activated");
@@ -593,19 +560,17 @@ alert("VIP Activated");
 
 window.dailyCheckin = async function(){
 
-const lastCheckin =
-localStorage.getItem("lastCheckin");
+const lastCheckin = localStorage.getItem("lastCheckin");
 
 const now = Date.now();
 
 if(lastCheckin){
 
-const difference =
-now - parseInt(lastCheckin);
+const difference = now - parseInt(lastCheckin);
 
 if(difference < 86400000){
 
-alert("Daily Check-In Already Claimed");
+alert("Already Claimed Today");
 
 return;
 
@@ -621,10 +586,7 @@ totalProfit: increment(20)
 
 });
 
-localStorage.setItem(
-"lastCheckin",
-now
-);
+localStorage.setItem("lastCheckin",now);
 
 alert("Rs.20 Added");
 
@@ -632,15 +594,13 @@ alert("Rs.20 Added");
 
 window.spinWheel = async function(){
 
-const lastSpin =
-localStorage.getItem("lastSpin");
+const lastSpin = localStorage.getItem("lastSpin");
 
 const now = Date.now();
 
 if(lastSpin){
 
-const difference =
-now - parseInt(lastSpin);
+const difference = now - parseInt(lastSpin);
 
 if(difference < 86400000){
 
@@ -664,19 +624,14 @@ alert("Better Luck Next Time");
 }else{
 
 await updateDoc(userRef,{
-
 balance: increment(reward)
-
 });
 
 alert("You Won Rs."+reward);
 
 }
 
-localStorage.setItem(
-"lastSpin",
-now
-);
+localStorage.setItem("lastSpin",now);
 
 }
 
@@ -691,17 +646,9 @@ document.getElementById("depTid").value;
 const file =
 document.getElementById("screenshot").files[0];
 
-if(!amount || !tid || !file){
-
-alert("Fill All Fields");
-
-return;
-
-}
-
 if(amount < 500){
 
-alert("Minimum Deposit is Rs.500");
+alert("Minimum Deposit Rs.500");
 
 return;
 
@@ -709,7 +656,7 @@ return;
 
 if(amount > 30000){
 
-alert("Maximum Deposit is Rs.30000");
+alert("Maximum Deposit Rs.30000");
 
 return;
 
@@ -753,7 +700,7 @@ parseInt(document.getElementById("withdrawAmount").value);
 
 if(amount < 500){
 
-alert("Minimum Withdraw is Rs.500");
+alert("Minimum Withdraw Rs.500");
 
 return;
 
@@ -761,7 +708,7 @@ return;
 
 if(amount > 30000){
 
-alert("Maximum Withdraw is Rs.30000");
+alert("Maximum Withdraw Rs.30000");
 
 return;
 
@@ -781,6 +728,66 @@ createdAt:new Date()
 alert("Withdraw Submitted");
 
 closeAll();
+
+}
+
+window.showHistory = async function(){
+
+showModal("historyModal");
+
+const depQuery =
+query(collection(db,"depositRequests"),
+where("uid","==",uid));
+
+const withQuery =
+query(collection(db,"withdrawRequests"),
+where("uid","==",uid));
+
+const depSnap = await getDocs(depQuery);
+
+const withSnap = await getDocs(withQuery);
+
+let html = "";
+
+html += "<h3 style='margin-top:10px;'>Deposit History</h3>";
+
+depSnap.forEach(doc=>{
+
+const d = doc.data();
+
+html += `
+
+<div class="history-box">
+
+Amount: Rs.${d.amount}<br>
+Status: ${d.status}
+
+</div>
+
+`;
+
+});
+
+html += "<h3 style='margin-top:20px;'>Withdraw History</h3>";
+
+withSnap.forEach(doc=>{
+
+const d = doc.data();
+
+html += `
+
+<div class="history-box">
+
+Amount: Rs.${d.amount}<br>
+Status: ${d.status}
+
+</div>
+
+`;
+
+});
+
+document.getElementById("historyData").innerHTML = html;
 
 }
 
