@@ -1,15 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Signup</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="title">Signup</div>
+
+<input type="email"
+id="email"
+placeholder="Email">
+
+<input type="password"
+id="password"
+placeholder="Password">
+
+<input type="text"
+id="referral"
+placeholder="Referral Code">
+
+<button class="btn"
+onclick="signup()">
+
+Create Account
+
+</button>
+
+<button class="btn"
+onclick="window.location='login.html'">
+
+Login
+
+</button>
+
+</div>
+
 <script type="module">
 
-import { auth, db } from './firebase.js';
+import { auth } from './firebase.js';
 
 import {
 createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
-
-import {
-doc,
-setDoc
-} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
 window.signup = async () => {
 
@@ -19,31 +55,17 @@ document.getElementById('email').value;
 const password =
 document.getElementById('password').value;
 
-const referral =
-document.getElementById('referral').value;
-
 try{
 
-const user =
 await createUserWithEmailAndPassword(
 auth,
 email,
 password
 );
 
-await setDoc(doc(db,"users",user.user.uid),{
+alert("Account Created");
 
-email: email,
-balance:0,
-todayProfit:0,
-totalProfit:0,
-referral: referral,
-notifications:[]
-});
-
-alert("Signup Successful");
-
-window.location = "login.html";
+window.location='login.html';
 
 }catch(error){
 
@@ -54,3 +76,6 @@ alert(error.message);
 }
 
 </script>
+
+</body>
+</html>
