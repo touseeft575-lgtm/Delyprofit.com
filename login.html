@@ -122,8 +122,11 @@ from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
 window.loginUser = async function(){
 
-const email =
+const phone =
 document.getElementById("email").value;
+
+const email =
+phone + "@gmail.com";
 
 const password =
 document.getElementById("password").value;
