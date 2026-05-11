@@ -248,7 +248,7 @@ Logout
 
 <div class="stat-box" style="border:2px solid #00ff66;">
 
-<div>Aaj Ka Profit</div>
+<div>todayprofit</div>
 
 <h2 style="color:#00ff66;font-size:38px;">
 Rs. <span id="todayProfit">0</span>
@@ -382,7 +382,38 @@ Withdraw
 <div id="historyData"></div>
 
 </div>
+<!-- Team Modal -->
 
+<div id="teamModal" class="modal">
+
+<h2>Team & Referral Bonus</h2>
+
+<div class="history-box">
+1 Invite = Rs.100
+</div>
+
+<div class="history-box">
+2 Invite = Rs.200
+</div>
+
+<div class="history-box">
+5 Invite = Rs.500
+</div>
+
+<br>
+
+<input type="text"
+id="referralLink"
+readonly>
+
+<button class="btn"
+onclick="copyReferral()">
+
+Copy Referral Link
+
+</button>
+
+</div>
 <!-- Navbar -->
 
 <div class="navbar">
@@ -392,16 +423,32 @@ Withdraw
 Home
 </div>
 
-<div class="nav-item" onclick="showHistory()">
+<div class="nav-item"
+onclick="showHistory()">
+
 <i class="fas fa-clock-rotate-left"></i>
+
 History
+
+</div>
+
+<div class="nav-item"
+onclick="showTeam()">
+
+<i class="fas fa-users"></i>
+
+Team
+
 </div>
 
 <a href="https://wa.me/923297179402">
 
 <div class="nav-item">
+
 <i class="fab fa-whatsapp"></i>
+
 Support
+
 </div>
 
 </a>
@@ -798,8 +845,36 @@ Status: ${d.status}
 
 document.getElementById("historyData").innerHTML = html;
 
+
 }
 
+window.showTeam = function(){
+
+showModal("teamModal");
+
+const refLink =
+window.location.origin +
+"/signup.html?ref=" + uid;
+
+document.getElementById("referralLink").value =
+refLink;
+
+}
+
+window.copyReferral = function(){
+
+const copyText =
+document.getElementById("referralLink");
+
+copyText.select();
+
+copyText.setSelectionRange(0,99999);
+
+navigator.clipboard.writeText(copyText.value);
+
+alert("Referral Link Copied");
+
+}
 </script>
 
 </body>
