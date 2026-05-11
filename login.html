@@ -1,22 +1,112 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Login</title>
-<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+background:#081225;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+padding:20px;
+}
+
+.login-box{
+width:100%;
+max-width:400px;
+background:#152238;
+padding:25px;
+border-radius:20px;
+box-shadow:0 0 20px rgba(0,0,0,0.4);
+}
+
+h1{
+text-align:center;
+margin-bottom:25px;
+color:#ffcc00;
+font-size:32px;
+}
+
+input{
+width:100%;
+padding:15px;
+margin-bottom:15px;
+border:none;
+border-radius:12px;
+background:#0f172a;
+color:white;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:15px;
+border:none;
+border-radius:12px;
+background:#00d2ff;
+color:black;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+margin-top:10px;
+}
+
+button:hover{
+opacity:0.9;
+}
+
+.register-btn{
+background:#ffcc00;
+margin-top:15px;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<div class="title">Login</div>
+<div class="login-box">
 
-<div class="card">
+<h1>Login</h1>
 
-<input type="text" id="phone" placeholder="Phone Number">
+<input type="email"
+id="email"
+placeholder="Enter Email">
 
-<input type="password" id="password" placeholder="Password">
+<input type="password"
+id="password"
+placeholder="Enter Password">
 
-<button class="btn" onclick="login()">
+<button onclick="loginUser()">
+
 Login
+
+</button>
+
+<button class="register-btn"
+onclick="window.location='register.html'">
+
+Register
+
 </button>
 
 </div>
@@ -27,32 +117,48 @@ import { auth } from './firebase.js';
 
 import {
 signInWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+}
+from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
-window.login = async ()=>{
+window.loginUser = async function(){
 
-const phone =
-document.getElementById('phone').value;
+const email =
+document.getElementById("email").value;
 
 const password =
-document.getElementById('password').value;
+document.getElementById("password").value;
 
-const fakeEmail =
-phone + "@dailyprofit.com";
+if(!email || !password){
 
-const user =
+alert("Fill All Fields");
+
+return;
+
+}
+
+try{
+
+const userCredential =
 await signInWithEmailAndPassword(
 auth,
-fakeEmail,
+email,
 password
 );
 
 localStorage.setItem(
 "uid",
-user.user.uid
+userCredential.user.uid
 );
 
+alert("Login Successful");
+
 window.location = "index.html";
+
+}catch(error){
+
+alert(error.message);
+
+}
 
 }
 
