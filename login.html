@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
 
+<body>
+
+<div class="card">
+
+<div class="title">Login</div>
+
+<input type="email" id="email" placeholder="Enter Email">
+
+<input type="password" id="password" placeholder="Enter Password">
+
+<button class="btn" onclick="loginUser()">
+Login
+</button>
+
+<button class="btn" onclick="window.location='signup.html'">
+Register
+</button>
+
+</div>
+
+<script type="module">
+
+import { auth } from './firebase.js';
+
+import {
+signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+
+window.loginUser = async () => {
+
+const email = document.getElementById('email').value;
+const password = document.getElementById('password').value;
+
+if(!email || !password){
+alert("Fill All Fields");
+return;
+}
+
+try{
+
+const userCredential = await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+localStorage.setItem("uid", userCredential.user.uid);
+
+alert("Login Successful");
+
+window.location.href = "dashboard.html";
+
+}catch(error){
+alert(error.message);
+}
+
+}
+
+</script>
+
+</body>
+</html>
