@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 <title>Dashboard</title>
 
@@ -8,28 +7,88 @@
 
 body{
 margin:0;
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-background:#06152b;
+padding:0;
+background:#00122b;
 font-family:Arial;
 color:white;
 }
 
-h1{
-font-size:40px;
-color:#11d8ff;
+.box{
+padding:20px;
+text-align:center;
+}
+
+.title{
+font-size:35px;
+font-weight:bold;
+color:#00d2ff;
+margin-top:50px;
+margin-bottom:40px;
+}
+
+.btn{
+width:90%;
+padding:18px;
+margin:15px 0;
+border:none;
+border-radius:15px;
+background:#00d2ff;
+font-size:20px;
+font-weight:bold;
+}
+
+.logout{
+background:red;
+color:white;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<h1>Welcome To Dashboard</h1>
+<div class="box">
+
+<div class="title">
+Welcome To Dashboard
+</div>
+
+<button class="btn">
+Deposit
+</button>
+
+<button class="btn">
+Withdraw
+</button>
+
+<button class="btn">
+Profile
+</button>
+
+<button class="btn logout"
+onclick="logout()">
+Logout
+</button>
+
+</div>
+
+<script type="module">
+
+import { auth } from './firebase.js';
+
+import {
+signOut
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+
+window.logout = async ()=>{
+
+await signOut(auth);
+
+window.location="login.html";
+
+}
+
+</script>
 
 </body>
-
 </html>
