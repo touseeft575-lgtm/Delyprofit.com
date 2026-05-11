@@ -197,9 +197,40 @@ color:white;
 
 <h1>DailyProfit</h1>
 
-<i class="fas fa-user-circle"
-style="font-size:38px;color:#ffcc00;"></i>
+<div style="display:flex;gap:10px;align-items:center;">
 
+<!-- SUPPORT BUTTON -->
+<button onclick="openSupport()"
+style="
+background:#25D366;
+border:none;
+padding:10px 14px;
+border-radius:10px;
+color:white;
+font-weight:bold;
+cursor:pointer;
+">
+Support
+</button>
+
+<!-- LOGOUT BUTTON -->
+<button onclick="logoutUser()"
+style="
+background:red;
+border:none;
+padding:10px 14px;
+border-radius:10px;
+color:white;
+font-weight:bold;
+cursor:pointer;
+">
+Logout
+</button>
+
+</div>
+
+</div>
+  
 </div>
 
 <div class="stats-grid">
@@ -574,7 +605,26 @@ document.getElementById("overlay").style.display = "block";
 }
 
 window.closeAll = function(){
+// SUPPORT BUTTON
+window.openSupport = function(){
 
+window.open(
+"https://wa.me/923297179402",
+"_blank"
+);
+
+}
+
+// LOGOUT BUTTON
+window.logoutUser = function(){
+
+localStorage.removeItem("loggedIn");
+
+alert("Logged Out Successfully");
+
+window.location.href = "login.html";
+
+}
 document.querySelectorAll(".modal").forEach(modal=>{
 
 modal.style.display = "none";
