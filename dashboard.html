@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DailyProfit Dashboard</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+background:#06152b;
+color:white;
+padding:12px;
+padding-bottom:90px;
+zoom:0.92;
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+}
+
+.logo{
+font-size:24px;
+font-weight:bold;
+}
+
+.logout-btn{
+background:#ffcc00;
+border:none;
+padding:10px 18px;
+border-radius:12px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.stats-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-bottom:15px;
+}
+
+.stat-box{
+background:#152238;
+padding:18px;
+border-radius:22px;
+text-align:center;
+}
+
+.balance-card{
+background:#152238;
+padding:25px;
+border-radius:25px;
+text-align:center;
+margin-bottom:18px;
+}
+
+.balance-title{
+font-size:20px;
+margin-bottom:10px;
+}
+
+.balance{
+font-size:55px;
+font-weight:bold;
+color:#ffcc00;
+}
+
+.action-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+margin-bottom:18px;
+}
+
+.action-card{
+background:#152238;
+padding:28px 18px;
+border-radius:22px;
+text-align:center;
+cursor:pointer;
+}
+
+.action-card i{
+font-size:38px;
+color:#ffcc00;
+margin-bottom:12px;
+}
+
+.action-card div{
+font-size:18px;
+}
+
+.section-title{
+font-size:24px;
+font-weight:bold;
+margin:20px 0 12px;
+}
+
+.plan-card{
+background:#152238;
+padding:20px;
+border-radius:22px;
+margin-bottom:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.activate-btn{
+background:#ffcc00;
+border:none;
+padding:12px 20px;
+border-radius:12px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.notice{
+background:#152238;
+padding:12px;
+border-radius:12px;
+margin-bottom:10px;
+font-size:14px;
+}
+
+.modal{
+display:none;
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:#152238;
+padding:22px;
+border-radius:22px;
+width:90%;
+max-width:400px;
+z-index:1000;
+max-height:90vh;
+overflow:auto;
+}
+
+.overlay{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+z-index:999;
+}
+
+input,select{
+width:100%;
+padding:13px;
+margin-top:10px;
+border:none;
+border-radius:12px;
+background:#081225;
+color:white;
+font-size:15px;
+}
+
+.btn{
+width:100%;
+padding:14px;
+margin-top:14px;
+border:none;
+border-radius:12px;
+background:#00d2ff;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.navbar{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#152238;
+display:flex;
+justify-content:space-around;
+padding:12px 0;
+}
+
+.nav-item{
+text-align:center;
+font-size:13px;
+color:white;
+}
+
+.nav-item i{
+display:block;
+font-size:22px;
+margin-bottom:4px;
+}
+
+.history-box{
+background:#081225;
+padding:12px;
+border-radius:12px;
+margin-top:10px;
+font-size:14px;
+}
+
+a{
+text-decoration:none;
+color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+
+<div class="logo">
+DailyProfit
+</div>
+
+<button class="logout-btn" onclick="logoutUser()">
+Logout
+</button>
+
+</div>
+
+<div class="stats-grid">
+
+<div class="stat-box" style="border:2px solid #00ff66;">
+
+<div>todayprofit</div>
+
+<h2 style="color:#00ff66;font-size:38px;">
+Rs. <span id="todayProfit">0</span>
+</h2>
+
+</div>
+
+<div class="stat-box" style="border:2px solid #ffcc00;">
+
+<div>Total Profit</div>
+
+<h2 style="color:#ffcc00;font-size:38px;">
+Rs. <span id="totalProfit">0</span>
+</h2>
+
+</div>
+
+</div>
+
+<div class="balance-card">
+
+<div class="balance-title">
+Total Balance
+</div>
+
+<div class="balance">
+Rs. <span id="balance">0</span>
+</div>
+
+</div>
+
+<div class="action-grid">
+
+<div class="action-card" onclick="showModal('depositModal')">
+<i class="fas fa-university"></i>
+<div>Deposit</div>
+</div>
+
+<div class="action-card" onclick="showModal('withdrawModal')">
+<i class="fas fa-wallet"></i>
+<div>Withdraw</div>
+</div>
+
+</div>
+
+<div class="action-grid">
+
+<div class="action-card" onclick="dailyCheckin()">
+<i class="fas fa-calendar-check"></i>
+<div>Daily Check-In</div>
+</div>
+
+<div class="action-card" onclick="spinWheel()">
+<i class="fas fa-gift"></i>
+<div>Spin Wheel</div>
+</div>
+
+</div>
+
+<div class="section-title">
+VIP Plans
+</div>
+
+<div id="plans"></div>
+
+<div class="section-title">
+Notifications
+</div>
+
+<div id="notifications"></div>
+
+<div id="overlay" class="overlay" onclick="closeAll()"></div>
+
+<!-- Deposit Modal -->
+
+<div id="depositModal" class="modal">
+
+<h2>Deposit</h2>
+
+<p style="margin-top:15px;">
+EasyPaisa Number
+</p>
+
+<h2 style="color:#ffcc00;">
+03404146445
+</h2>
+
+<p>
+Name: Mohammed Tauseef Ahmed
+</p>
+
+<input type="number" id="depAmount" placeholder="Enter Amount">
+
+<input type="text" id="depTid" placeholder="Transaction ID">
+
+<input type="file" id="screenshot">
+
+<button class="btn" onclick="submitDeposit()">
+Submit Deposit
+</button>
+
+</div>
+
+<!-- Withdraw Modal -->
+
+<div id="withdrawModal" class="modal">
+
+<h2>Withdraw</h2>
+
+<select id="withdrawMethod">
+<option>EasyPaisa</option>
+<option>JazzCash</option>
+</select>
+
+<input type="text" id="withdrawNumber" placeholder="Phone Number">
+
+<input type="number" id="withdrawAmount" placeholder="Amount">
+
+<button class="btn" onclick="submitWithdraw()">
+Withdraw
+</button>
+
+</div>
+
+<!-- History Modal -->
+
+<div id="historyModal" class="modal">
+
+<h2>Transaction History</h2>
+
+<div id="historyData"></div>
+
+</div>
+<!-- Team Modal -->
+
+<div id="teamModal" class="modal">
+
+<h2>Team & Referral Bonus</h2>
+
+<div class="history-box">
+1 Invite = Rs.100
+</div>
+
+<div class="history-box">
+2 Invite = Rs.200
+</div>
+
+<div class="history-box">
+5 Invite = Rs.500
+</div>
+
+<br>
+
+<input type="text"
+id="referralLink"
+readonly>
+
+<button class="btn"
+onclick="copyReferral()">
+
+Copy Referral Link
+
+</button>
+
+</div>
+<!-- Navbar -->
+
+<div class="navbar">
+
+<div class="nav-item">
+<i class="fas fa-home"></i>
+Home
+</div>
+
+<div class="nav-item"
+onclick="showHistory()">
+
+<i class="fas fa-clock-rotate-left"></i>
+
+History
+
+</div>
+
+<div class="nav-item"
+onclick="showTeam()">
+
+<i class="fas fa-users"></i>
+
+Team
+
+</div>
+
+<a href="https://wa.me/923297179402">
+
+<div class="nav-item">
+
+<i class="fab fa-whatsapp"></i>
+
+Support
+
+</div>
+
+</a>
+
+</div>
+
+<script type="module">
+
+import { db, storage } from './firebase.js';
+
+import {
+doc,
+onSnapshot,
+updateDoc,
+increment,
+arrayUnion,
+addDoc,
+collection,
+query,
+where,
+getDocs
+
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
+import {
+ref,
+uploadBytes,
+getDownloadURL
+
+} from "https://www.gstatic.com/firebasejs/9.17.1/firebase-storage.js";
+
+const uid = localStorage.getItem("uid");
+
+if(!uid){
+window.location = "login.html";
+}
+
+const userRef = doc(db,"users",uid);
+
+const vipPlans = [
+
+{name:"VIP1",amount:500,daily:120},
+{name:"VIP2",amount:1000,daily:240},
+{name:"VIP3",amount:2000,daily:480},
+{name:"VIP4",amount:5000,daily:1200},
+
+{name:"VIP5",amount:10000,daily:2500},
+{name:"VIP6",amount:20000,daily:5200},
+{name:"VIP7",amount:30000,daily:8000},
+{name:"VIP8",amount:50000,daily:14000},
+{name:"VIP9",amount:100000,daily:30000}
+
+];
+
+
+
+
+const plansDiv = document.getElementById("plans");
+
+vipPlans.forEach(plan=>{
+
+plansDiv.innerHTML += `
+
+<div class="plan-card">
+
+<div>
+<h2>${plan.name}</h2>
+<p>Invest Rs.${plan.amount}</p>
+<p>Daily Rs.${plan.daily}</p>
+</div>
+
+<button class="activate-btn"
+onclick="activatePlan(${plan.amount})">
+
+Activate
+
+</button>
+
+</div>
+
+`;
+
+});
+
+onSnapshot(userRef,(snap)=>{
+
+if(snap.exists()){
+
+const d = snap.data();
+
+document.getElementById("balance").innerText = d.balance || 0;
+
+document.getElementById("todayProfit").innerText =
+d.todayProfit || 0;
+
+document.getElementById("totalProfit").innerText =
+d.totalProfit || 0;
+
+if(d.notifications){
+
+document.getElementById("notifications").innerHTML =
+
+d.notifications.map(n=>`
+
+<div class="notice">
+${n.message}
+</div>
+
+`).join('');
+
+}
+
+}
+
+});
+
+window.showModal = function(id){
+
+document.getElementById(id).style.display = "block";
+
+document.getElementById("overlay").style.display = "block";
+
+}
+
+window.closeAll = function(){
+
+document.querySelectorAll(".modal").forEach(m=>{
+
+m.style.display = "none";
+
+});
+
+document.getElementById("overlay").style.display = "none";
+
+}
+
+window.logoutUser = function(){
+
+localStorage.removeItem("uid");
+
+window.location = "login.html";
+
+}
+
+window.activatePlan = async function(amount){
+
+const balance =
+parseInt(document.getElementById("balance").innerText);
+
+if(balance < amount){
+
+alert("Insufficient Balance");
+
+return;
+
+}
+
+await updateDoc(userRef,{
+balance: increment(-amount)
+});
+
+alert("VIP Activated");
+
+}
+
+window.dailyCheckin = async function(){
+
+const lastCheckin = localStorage.getItem("lastCheckin");
+
+const now = Date.now();
+
+if(lastCheckin){
+
+const difference = now - parseInt(lastCheckin);
+
+if(difference < 86400000){
+
+alert("Already Claimed Today");
+
+return;
+
+}
+
+}
+
+await updateDoc(userRef,{
+
+balance: increment(20),
+todayProfit: increment(20),
+totalProfit: increment(20)
+
+});
+
+localStorage.setItem("lastCheckin",now);
+
+alert("Rs.20 Added");
+
+}
+
+window.spinWheel = async function(){
+
+const lastSpin = localStorage.getItem("lastSpin");
+
+const now = Date.now();
+
+if(lastSpin){
+
+const difference = now - parseInt(lastSpin);
+
+if(difference < 86400000){
+
+alert("Spin Already Used Today");
+
+return;
+
+}
+
+}
+
+const rewards = [0,10,50,100];
+
+const reward =
+rewards[Math.floor(Math.random()*rewards.length)];
+
+if(reward == 0){
+
+alert("Better Luck Next Time");
+
+}else{
+
+await updateDoc(userRef,{
+balance: increment(reward)
+});
+
+alert("You Won Rs."+reward);
+
+}
+
+localStorage.setItem("lastSpin",now);
+
+}
+
+window.submitDeposit = async function(){
+
+const amount =
+parseInt(document.getElementById("depAmount").value);
+
+const tid =
+document.getElementById("depTid").value;
+
+const file =
+document.getElementById("screenshot").files[0];
+
+if(amount < 500){
+
+alert("Minimum Deposit Rs.500");
+
+return;
+
+}
+
+if(amount > 30000){
+
+alert("Maximum Deposit Rs.30000");
+
+return;
+
+}
+
+const storageRef =
+ref(storage,"deposits/"+Date.now());
+
+await uploadBytes(storageRef,file);
+
+const imageUrl =
+await getDownloadURL(storageRef);
+
+await addDoc(collection(db,"depositRequests"),{
+
+uid,
+amount,
+tid,
+screenshot:imageUrl,
+status:"Pending",
+createdAt:new Date()
+
+});
+
+alert("Deposit Submitted");
+
+closeAll();
+
+}
+
+window.submitWithdraw = async function(){
+
+const method =
+document.getElementById("withdrawMethod").value;
+
+const number =
+document.getElementById("withdrawNumber").value;
+
+const amount =
+parseInt(document.getElementById("withdrawAmount").value);
+
+if(amount < 500){
+
+alert("Minimum Withdraw Rs.500");
+
+return;
+
+}
+
+if(amount > 30000){
+
+alert("Maximum Withdraw Rs.30000");
+
+return;
+
+}
+
+await addDoc(collection(db,"withdrawRequests"),{
+
+uid,
+method,
+number,
+amount,
+status:"Pending",
+createdAt:new Date()
+
+});
+
+alert("Withdraw Submitted");
+
+closeAll();
+
+}
+
+window.showHistory = async function(){
+
+showModal("historyModal");
+
+const depQuery =
+query(collection(db,"depositRequests"),
+where("uid","==",uid));
+
+const withQuery =
+query(collection(db,"withdrawRequests"),
+where("uid","==",uid));
+
+const depSnap = await getDocs(depQuery);
+
+const withSnap = await getDocs(withQuery);
+
+let html = "";
+
+html += "<h3 style='margin-top:10px;'>Deposit History</h3>";
+
+depSnap.forEach(doc=>{
+
+const d = doc.data();
+
+html += `
+
+<div class="history-box">
+
+Amount: Rs.${d.amount}<br>
+Status: ${d.status}
+
+</div>
+
+`;
+
+});
+
+html += "<h3 style='margin-top:20px;'>Withdraw History</h3>";
+
+withSnap.forEach(doc=>{
+
+const d = doc.data();
+
+html += `
+
+<div class="history-box">
+
+Amount: Rs.${d.amount}<br>
+Status: ${d.status}
+
+</div>
+
+`;
+
+});
+
+document.getElementById("historyData").innerHTML = html;
+
+
+}
+
+window.showTeam = function(){
+
+showModal("teamModal");
+const refLink =
+window.location.origin +
+"/signup.html?ref=" + uid;
+
+document.getElementById("referralLink").value =
+refLink;
+
+}
+
+window.copyReferral = function(){
+
+const copyText =
+document.getElementById("referralLink");
+
+copyText.select();
+
+copyText.setSelectionRange(0,99999);
+
+navigator.clipboard.writeText(copyText.value);
+
+alert("Referral Link Copied");
+
+}
+</script>
+
+</body>
+</html>
