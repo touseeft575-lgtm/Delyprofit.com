@@ -697,10 +697,7 @@ parseInt(document.getElementById("depAmount").value);
 const tid =
 document.getElementById("depTid").value;
 
-const file =
-document.getElementById("screenshot").files[0];
-
-if(!amount || !tid || !file){
+if(!amount || !tid){
 
 alert("Please Fill All Fields");
 
@@ -724,22 +721,11 @@ return;
 
 }
 
-try{
-
-const storageRef =
-ref(storage,"deposits/" + Date.now());
-
-await uploadBytes(storageRef,file);
-
-const imageUrl =
-await getDownloadURL(storageRef);
-
 await addDoc(collection(db,"depositRequests"),{
 
 uid: currentUID,
 amount: amount,
 transactionID: tid,
-screenshot: imageUrl,
 status: "Pending",
 createdAt: new Date()
 
@@ -751,15 +737,6 @@ closeAll();
 
 document.getElementById("depAmount").value = "";
 document.getElementById("depTid").value = "";
-document.getElementById("screenshot").value = "";
-
-}catch(error){
-
-console.log(error);
-
-alert("Deposit Failed");
-
-}
 
 }
 
