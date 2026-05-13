@@ -689,7 +689,8 @@ alert("You Won Rs."+reward);
 
 localStorage.setItem("lastSpin",now);
 }
-  window.submitDeposit = async function(){
+  
+window.submitDeposit = async function(){
 
 const amount =
 parseInt(document.getElementById("depAmount").value);
@@ -697,7 +698,10 @@ parseInt(document.getElementById("depAmount").value);
 const tid =
 document.getElementById("depTid").value;
 
-if(!amount || !tid){
+const file =
+document.getElementById("screenshot").files[0];
+
+if(!amount || !tid || !file){
 
 alert("Please Fill All Fields");
 
@@ -721,12 +725,28 @@ return;
 
 }
 
+try{
+
+const storageRef =
+ref(storage,'screenshots/'+Date.now());
+
+await uploadBytes(storageRef,file);
+
+const url =
+await getDownloadURL(storageRef);
+
 await addDoc(collection(db,"depositRequests"),{
 
-uid: uid,
+uid: currentUID,
+
 amount: amount,
+
 transactionID: tid,
+
+screenshot: url,
+
 status: "Pending",
+
 createdAt: new Date()
 
 });
@@ -737,9 +757,17 @@ closeAll();
 
 document.getElementById("depAmount").value = "";
 document.getElementById("depTid").value = "";
+document.getElementById("screenshot").value = "";
+
+}catch(err){
+
+console.log(err);
+
+alert("Upload Failed");
 
 }
 
+}
 
 window.submitWithdraw = async function(){
 
