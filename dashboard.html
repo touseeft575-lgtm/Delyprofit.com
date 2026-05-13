@@ -344,7 +344,7 @@ Name: Mohammed Tauseef Ahmed
 
 <input type="text" id="depTid" placeholder="Transaction ID">
 
-<input type="file" id="screenshot">
+
 
 <button class="btn" onclick="submitDeposit()">
 Submit Deposit
@@ -698,10 +698,9 @@ parseInt(document.getElementById("depAmount").value);
 const tid =
 document.getElementById("depTid").value;
 
-const file =
-document.getElementById("screenshot").files[0];
 
-if(!amount || !tid || !file){
+
+if(!amount || !tid){
 
 alert("Please Fill All Fields");
 
@@ -727,13 +726,6 @@ return;
 
 try{
 
-const storageRef =
-ref(storage,'screenshots/'+Date.now());
-
-await uploadBytes(storageRef,file);
-
-const url =
-await getDownloadURL(storageRef);
 
 await addDoc(collection(db,"depositRequests"),{
 
@@ -743,7 +735,7 @@ amount: amount,
 
 transactionID: tid,
 
-screenshot: url,
+
 
 status: "Pending",
 
@@ -757,7 +749,7 @@ closeAll();
 
 document.getElementById("depAmount").value = "";
 document.getElementById("depTid").value = "";
-document.getElementById("screenshot").value = "";
+
 
 }catch(err){
 
