@@ -688,7 +688,8 @@ alert("You Won Rs."+reward);
 }
 
 localStorage.setItem("lastSpin",now);
-window.submitDeposit = async function(){
+}
+  window.submitDeposit = async function(){
 
 const amount =
 parseInt(document.getElementById("depAmount").value);
@@ -726,7 +727,7 @@ return;
 try{
 
 const storageRef =
-ref(storage,"deposits/"+Date.now());
+ref(storage,"deposits/" + Date.now());
 
 await uploadBytes(storageRef,file);
 
@@ -736,17 +737,21 @@ await getDownloadURL(storageRef);
 await addDoc(collection(db,"depositRequests"),{
 
 uid: currentUID,
-amount,
+amount: amount,
 transactionID: tid,
-screenshot:imageUrl,
-status:"Pending",
-createdAt:new Date()
+screenshot: imageUrl,
+status: "Pending",
+createdAt: new Date()
 
 });
 
-alert("Deposit Submitted");
+alert("Deposit Submitted Successfully");
 
 closeAll();
+
+document.getElementById("depAmount").value = "";
+document.getElementById("depTid").value = "";
+document.getElementById("screenshot").value = "";
 
 }catch(error){
 
@@ -757,6 +762,7 @@ alert("Deposit Failed");
 }
 
 }
+
 
 window.submitWithdraw = async function(){
 
