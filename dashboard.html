@@ -754,6 +754,9 @@ document.getElementById("withdrawNumber").value;
 const amount =
 parseInt(document.getElementById("withdrawAmount").value);
 
+const snap = await getDoc(userRef);
+const data = snap.data();
+
 if(amount < 500){
 
 alert("Minimum Withdraw Rs.500");
@@ -770,6 +773,18 @@ return;
 
 }
 
+if(data.balance < amount){
+
+alert("Insufficient Balance");
+
+return;
+
+}
+
+await updateDoc(userRef,{
+balance: increment(-amount)
+});
+
 await addDoc(collection(db,"withdrawRequests"),{
 
 uid,
@@ -784,6 +799,8 @@ createdAt:new Date()
 alert("Withdraw Submitted");
 
 closeAll();
+
+}
 
 }
 
