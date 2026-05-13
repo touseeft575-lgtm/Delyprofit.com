@@ -723,7 +723,7 @@ return;
 
 await addDoc(collection(db,"depositRequests"),{
 
-uid: currentUID,
+uid: uid,
 amount: amount,
 transactionID: tid,
 status: "Pending",
